@@ -22,8 +22,8 @@
       "label": "Source Systems",
       "description": "Upstream operational systems that feed raw data into the analytics pipeline. Includes Transportation Management Systems (TMS), Enterprise Resource Planning (ERP), Customer Relationship Management (CRM), carrier API feeds, market data providers, and IoT sensor streams. Data arrives in varied formats (JSON, CSV, EDI, XML) with inconsistent schemas and quality levels.",
       "position": {
-        "x": 160,
-        "y": 435
+        "x": 240,
+        "y": 653
       },
       "dataFlows": [
         "shipment records",
@@ -47,8 +47,8 @@
       "label": "Ingestion Layer",
       "description": "Batch and streaming ETL connectors that extract data from source systems, perform initial validation, and land raw records into the data lake. Handles Change Data Capture (CDC) for real-time updates, API polling for external feeds, file-based imports for legacy systems, and event stream consumption from message brokers (Kafka, EventBridge).",
       "position": {
-        "x": 480,
-        "y": 435
+        "x": 720,
+        "y": 653
       },
       "dataFlows": [
         "raw ingested records",
@@ -71,8 +71,8 @@
       "label": "Data Lake (Raw Storage)",
       "description": "Centralized raw data repository storing ingested data in its original format before transformation. Typically implemented on cloud object storage (S3, Azure Data Lake Storage, GCS) with partitioned directory structures organized by source, date, and data domain. Serves as the immutable source-of-truth layer for audit and reprocessing.",
       "position": {
-        "x": 800,
-        "y": 285
+        "x": 1200,
+        "y": 428
       },
       "dataFlows": [
         "raw data files",
@@ -94,8 +94,8 @@
       "label": "Transformation Layer",
       "description": "Data processing engine that cleans, normalizes, deduplicates, and enriches raw data into analytics-ready datasets. Implements business logic using dbt models, Apache Spark jobs, or SQL-based transformations. Handles schema evolution, data type casting, currency conversion, timezone normalization, and entity resolution across disparate source systems.",
       "position": {
-        "x": 800,
-        "y": 660
+        "x": 1200,
+        "y": 990
       },
       "dataFlows": [
         "cleaned datasets",
@@ -117,8 +117,8 @@
       "label": "AI/ML Enrichment",
       "description": "Machine learning models that augment transformed data with AI-generated insights. Runs anomaly detection on financial transactions and operational metrics, classifies shipment delays by root cause, performs NLP-based entity extraction from unstructured carrier communications, and generates predictive features for downstream consumption. Models are trained on historical pipeline data and deployed as batch or near-real-time inference jobs.",
       "position": {
-        "x": 1120,
-        "y": 510
+        "x": 1680,
+        "y": 765
       },
       "dataFlows": [
         "anomaly scores",
@@ -142,8 +142,8 @@
       "label": "Data Warehouse",
       "description": "Structured analytical data store optimized for complex queries and aggregations. Implements star or snowflake schemas with fact and dimension tables for shipment volumes, revenue, carrier performance, customer metrics, and operational KPIs. Typically Snowflake, BigQuery, Redshift, or Synapse. Serves as the primary query target for BI tools and the NL query interface.",
       "position": {
-        "x": 1440,
-        "y": 360
+        "x": 2160,
+        "y": 540
       },
       "dataFlows": [
         "analytical tables",
@@ -165,8 +165,8 @@
       "label": "Semantic Layer",
       "description": "Business logic abstraction layer that defines canonical metric definitions, dimension hierarchies, and a governed data catalog. Ensures that 'revenue,' 'on-time delivery rate,' and 'carrier score' mean the same thing regardless of which dashboard, report, or query tool accesses the data. Implemented via tools like dbt Semantic Layer, AtScale, or Cube. Provides the ontology that the NL query interface uses to translate natural language into accurate SQL.",
       "position": {
-        "x": 1440,
-        "y": 660
+        "x": 2160,
+        "y": 990
       },
       "dataFlows": [
         "metric definitions",
@@ -188,8 +188,8 @@
       "label": "BI / Dashboard Layer",
       "description": "Visualization and reporting front-end that presents analytics to business users through interactive dashboards and charts. Tools like Tableau, Power BI, Looker, or custom web dashboards. Renders executive summaries, carrier scorecards, financial drill-downs, and operational monitors. Users interact with filters, date ranges, and drill-through paths to explore data.",
       "position": {
-        "x": 1840,
-        "y": 210
+        "x": 2760,
+        "y": 315
       },
       "dataFlows": [
         "dashboard views",
@@ -211,8 +211,8 @@
       "label": "NL Query Interface",
       "description": "Natural language to SQL translation layer that allows non-technical users to ask business questions in plain English and receive data-driven answers. Uses an LLM to interpret user intent, maps questions to semantic layer definitions, generates SQL queries against the data warehouse, and formats results as tables or charts. Enables questions like 'What was our on-time delivery rate for Q4 by carrier?' without SQL knowledge.",
       "position": {
-        "x": 1840,
-        "y": 510
+        "x": 2760,
+        "y": 765
       },
       "dataFlows": [
         "natural language questions",
@@ -233,10 +233,10 @@
       "id": "report-generator",
       "type": "component",
       "label": "Automated Report Generator",
-      "description": "Scheduled reporting engine that produces and distributes automated business reports \u00e2\u20ac\u201d weekly carrier scorecards, monthly financial summaries, daily operational snapshots, and ad-hoc executive briefings. Uses LLM-generated natural language narratives to summarize key trends, anomalies, and recommendations alongside charts and tables. Distributes via email, Slack, SharePoint, or embedded portal.",
+      "description": "Scheduled reporting engine that produces and distributes automated business reports â€” weekly carrier scorecards, monthly financial summaries, daily operational snapshots, and ad-hoc executive briefings. Uses LLM-generated natural language narratives to summarize key trends, anomalies, and recommendations alongside charts and tables. Distributes via email, Slack, SharePoint, or embedded portal.",
       "position": {
-        "x": 1840,
-        "y": 810
+        "x": 2760,
+        "y": 1215
       },
       "dataFlows": [
         "generated reports",
@@ -258,8 +258,8 @@
       "label": "Access Control Layer",
       "description": "Centralized authorization layer enforcing row-level security, column-level masking, and role-based access across all serving components. Controls which users, teams, and service accounts can access which data domains, cost centers, customer segments, and geographic regions. Integrates with corporate SSO/LDAP, implements attribute-based access control (ABAC), and maintains audit logs of all data access events.",
       "position": {
-        "x": 1120,
-        "y": 960
+        "x": 1680,
+        "y": 1440
       },
       "dataFlows": [
         "access policies",
@@ -282,8 +282,8 @@
       "label": "Data Quality Monitor",
       "description": "Continuous data observability system that monitors pipeline health, data freshness, schema consistency, volume anomalies, and statistical drift across all pipeline stages. Runs automated checks after each transformation step, alerts on SLA breaches, tracks data lineage for impact analysis, and provides a quality scorecard for each data domain. Implements tools like Great Expectations, Monte Carlo, or Soda.",
       "position": {
-        "x": 800,
-        "y": 960
+        "x": 1200,
+        "y": 1440
       },
       "dataFlows": [
         "quality check results",

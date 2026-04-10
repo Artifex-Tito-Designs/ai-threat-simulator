@@ -35,8 +35,8 @@
       "label": "Data Sources",
       "description": "External and internal data feeds that supply raw inputs to the ML pipeline. Includes shipment history databases, market rate feeds (DAT, Freightos), carrier performance APIs, weather services, port congestion feeds, fuel price indices, and economic indicators. Data quality and integrity at this layer directly determines model accuracy downstream.",
       "position": {
-        "x": 160,
-        "y": 285
+        "x": 240,
+        "y": 428
       },
       "dataFlows": [
         "shipment records",
@@ -60,8 +60,8 @@
       "label": "Data Ingestion Layer",
       "description": "ETL/ELT pipelines and streaming ingestion services that collect, validate, transform, and load raw data into the data warehouse and feature store. Handles batch imports (nightly shipment syncs), real-time streams (market rate ticks, GPS pings), schema validation, deduplication, and data quality checks. Typically built on Apache Kafka, Spark, or Airflow.",
       "position": {
-        "x": 480,
-        "y": 285
+        "x": 720,
+        "y": 428
       },
       "dataFlows": [
         "validated records",
@@ -83,8 +83,8 @@
       "label": "Data Warehouse",
       "description": "Central repository for historical and curated datasets used in model training, validation, and backtesting. Stores cleaned shipment records, historical rates, carrier performance logs, demand signals, and ground truth labels. Serves as the single source of truth for all ML experimentation and production training jobs.",
       "position": {
-        "x": 480,
-        "y": 585
+        "x": 720,
+        "y": 878
       },
       "dataFlows": [
         "training datasets",
@@ -107,8 +107,8 @@
       "label": "Feature Store",
       "description": "Centralized repository of computed, versioned features used for both model training and real-time inference. Stores pre-computed aggregations (carrier on-time rates, lane averages, seasonal indices), real-time features (current fuel price, weather score), and feature metadata (data types, freshness SLAs, lineage). Ensures training-serving consistency by providing the same feature computation logic for both contexts.",
       "position": {
-        "x": 800,
-        "y": 285
+        "x": 1200,
+        "y": 428
       },
       "dataFlows": [
         "computed features",
@@ -130,8 +130,8 @@
       "label": "Training Pipeline",
       "description": "Orchestrates end-to-end model training: dataset sampling, feature selection, hyperparameter tuning, cross-validation, model fitting, and evaluation against holdout sets. Runs on GPU/CPU clusters (SageMaker, Vertex AI, Kubeflow). Produces trained model artifacts, evaluation metrics, and training metadata for the experiment tracker and model registry.",
       "position": {
-        "x": 880,
-        "y": 585
+        "x": 1320,
+        "y": 878
       },
       "dataFlows": [
         "trained model artifacts",
@@ -153,8 +153,8 @@
       "label": "ML Experiment Tracker",
       "description": "Records and compares all training runs with their parameters, metrics, datasets, and artifacts. Provides reproducibility, audit trails, and model lineage tracking. Typically MLflow, Weights & Biases, or Neptune. Enables A/B test analysis and model comparison for promotion decisions.",
       "position": {
-        "x": 1200,
-        "y": 735
+        "x": 1800,
+        "y": 1103
       },
       "dataFlows": [
         "experiment metadata",
@@ -176,8 +176,8 @@
       "label": "Model Registry",
       "description": "Version-controlled repository of trained model artifacts with lifecycle management. Stores serialized models, serving configurations, A/B test allocations, approval workflows, and rollback history. Gates model promotion from staging to production through validation checks and human approval. Central point of control for what models are actively serving predictions.",
       "position": {
-        "x": 1200,
-        "y": 435
+        "x": 1800,
+        "y": 653
       },
       "dataFlows": [
         "versioned models",
@@ -200,8 +200,8 @@
       "label": "Model Serving",
       "description": "Inference infrastructure that loads trained models from the registry and executes predictions in real-time or batch mode. Handles feature retrieval, model execution, prediction post-processing, and response formatting. Runs on dedicated serving infrastructure (TensorFlow Serving, TorchServe, Triton, SageMaker Endpoints) with auto-scaling, canary deployments, and shadow mode testing.",
       "position": {
-        "x": 1520,
-        "y": 435
+        "x": 2280,
+        "y": 653
       },
       "dataFlows": [
         "raw predictions",
@@ -223,8 +223,8 @@
       "label": "Prediction API",
       "description": "REST/gRPC endpoint that exposes model predictions to downstream business systems. Handles authentication, rate limiting, request validation, response formatting, and SLA enforcement. Translates raw model outputs into business-meaningful predictions (dollar amounts, probability scores, time estimates). Acts as the trust boundary between the ML platform and consuming applications.",
       "position": {
-        "x": 1520,
-        "y": 210
+        "x": 2280,
+        "y": 315
       },
       "dataFlows": [
         "formatted predictions",
@@ -246,8 +246,8 @@
       "label": "Business Applications",
       "description": "Downstream systems that consume model predictions and present them to end users or automated workflows. Includes pricing UIs (rate quoting tools), operations dashboards (capacity planning screens), booking systems (automated rate proposals), fraud review queues, and ETA tracking interfaces. These systems act on predictions and are the ultimate consumers of model output.",
       "position": {
-        "x": 1920,
-        "y": 210
+        "x": 2880,
+        "y": 315
       },
       "dataFlows": [
         "displayed predictions",
@@ -269,8 +269,8 @@
       "label": "Model Monitor",
       "description": "Continuous monitoring system that tracks model performance, data drift, prediction distribution shifts, and operational health in production. Detects concept drift (changing relationship between features and outcomes), data drift (shifting input distributions), and model degradation. Triggers alerts and automated retraining workflows when performance drops below thresholds.",
       "position": {
-        "x": 1520,
-        "y": 735
+        "x": 2280,
+        "y": 1103
       },
       "dataFlows": [
         "drift alerts",
@@ -292,8 +292,8 @@
       "label": "Ground Truth Feedback",
       "description": "Collects actual outcomes (real delivery times, actual market rates, confirmed fraud cases) and compares them against model predictions to compute accuracy metrics and generate labeled training data for model retraining. Feedback latency varies from minutes (fraud confirmation) to weeks (final shipment settlement). Critical for continuous model improvement and drift correction.",
       "position": {
-        "x": 1920,
-        "y": 585
+        "x": 2880,
+        "y": 878
       },
       "dataFlows": [
         "actual outcomes",

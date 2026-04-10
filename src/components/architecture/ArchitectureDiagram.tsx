@@ -86,9 +86,8 @@ export function ArchitectureDiagram({ architecture, onNodeClick }: ArchitectureD
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         onInit={onInit}
-        fitView
-        fitViewOptions={{ padding: 0.2 }}
-        minZoom={0.3}
+        defaultViewport={{ x: 50, y: 20, zoom: 0.6 }}
+        minZoom={0.2}
         maxZoom={3}
         panOnDrag
         zoomOnScroll

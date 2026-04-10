@@ -29,10 +29,10 @@
       "id": "user-trigger",
       "type": "user",
       "label": "User / Trigger Interface",
-      "description": "Entry point for agent tasks \u00e2\u20ac\u201d can be a human request via chat or dashboard, an automated API call, a scheduled cron trigger, or an event-driven webhook. All task inputs enter the system here, including natural language instructions, structured payloads, and follow-up corrections. This is the primary injection surface for adversarial task descriptions.",
+      "description": "Entry point for agent tasks â€” can be a human request via chat or dashboard, an automated API call, a scheduled cron trigger, or an event-driven webhook. All task inputs enter the system here, including natural language instructions, structured payloads, and follow-up corrections. This is the primary injection surface for adversarial task descriptions.",
       "position": {
-        "x": 160,
-        "y": 510
+        "x": 240,
+        "y": 765
       },
       "dataFlows": [
         "task requests",
@@ -54,8 +54,8 @@
       "label": "Agent Orchestrator",
       "description": "Central coordination loop that manages the agent lifecycle: receives tasks, invokes the planning module, dispatches tool calls, evaluates results, and decides whether to continue, retry, or escalate. Maintains the execution state machine and enforces step limits to prevent infinite loops. This is the most privileged component in the architecture.",
       "position": {
-        "x": 640,
-        "y": 510
+        "x": 960,
+        "y": 765
       },
       "dataFlows": [
         "task decomposition requests",
@@ -78,8 +78,8 @@
       "label": "Planning Module",
       "description": "Decomposes high-level task objectives into ordered subtask sequences. Uses the LLM to reason about task dependencies, identify required tools, estimate step count, and produce an execution plan. Re-plans dynamically when tool calls fail or return unexpected results. Plans are validated against the policy engine before execution begins.",
       "position": {
-        "x": 640,
-        "y": 210
+        "x": 960,
+        "y": 315
       },
       "dataFlows": [
         "execution plans",
@@ -101,8 +101,8 @@
       "label": "Memory / State Store",
       "description": "Persists conversation history, task progress, intermediate results, and agent context across planning and execution steps. Stores both short-term working memory (current task state) and long-term memory (past task outcomes, learned preferences). Feeds context back into the LLM for informed decision-making. Contains sensitive operational data including booking references, rate agreements, and customer identifiers.",
       "position": {
-        "x": 1040,
-        "y": 210
+        "x": 1560,
+        "y": 315
       },
       "dataFlows": [
         "conversation history",
@@ -123,10 +123,10 @@
       "id": "tool-registry",
       "type": "component",
       "label": "Tool Registry",
-      "description": "Catalog of all tools, APIs, and functions available to the agent, including their schemas, required parameters, permission levels, and rate limits. The LLM references this registry to select appropriate tools for each subtask. Controls the agent's capability surface \u00e2\u20ac\u201d any tool registered here can potentially be invoked by the agent.",
+      "description": "Catalog of all tools, APIs, and functions available to the agent, including their schemas, required parameters, permission levels, and rate limits. The LLM references this registry to select appropriate tools for each subtask. Controls the agent's capability surface â€” any tool registered here can potentially be invoked by the agent.",
       "position": {
-        "x": 1040,
-        "y": 510
+        "x": 1560,
+        "y": 765
       },
       "dataFlows": [
         "tool schemas",
@@ -148,8 +148,8 @@
       "label": "Tool Executor",
       "description": "Runtime layer that actually executes tool calls against external systems. Marshals parameters from the LLM's structured output, authenticates against target APIs, handles retries and timeouts, and returns results to the orchestrator. Operates with real credentials and can trigger irreversible actions in external systems.",
       "position": {
-        "x": 1440,
-        "y": 510
+        "x": 2160,
+        "y": 765
       },
       "dataFlows": [
         "API requests",
@@ -162,7 +162,7 @@
       "vulnerabilities": [
         "Credential exposure if API keys and service account tokens are accessible to the LLM through tool execution logs or error messages",
         "Parameter injection where LLM-generated tool arguments contain malicious payloads passed directly to external APIs (SQL injection, command injection)",
-        "Irreversible action execution without pre-validation \u00e2\u20ac\u201d booking confirmations, payment authorizations, or shipment cancellations executed before human review",
+        "Irreversible action execution without pre-validation â€” booking confirmations, payment authorizations, or shipment cancellations executed before human review",
         "Rate limit exhaustion through rapid sequential tool calls draining API quotas and incurring overage charges"
       ]
     },
@@ -172,8 +172,8 @@
       "label": "External APIs / Systems",
       "description": "Third-party services the agent interacts with: TMS platforms, carrier booking APIs, customs declaration portals, payment gateways, ERP systems, email services, and document management systems. Each external system has its own authentication, rate limits, and data formats. Responses from these systems re-enter the agent loop and influence subsequent decisions.",
       "position": {
-        "x": 1920,
-        "y": 510
+        "x": 2880,
+        "y": 765
       },
       "dataFlows": [
         "booking confirmations",
@@ -197,8 +197,8 @@
       "label": "LLM / Foundation Model",
       "description": "Core reasoning engine that powers the agent's decision-making. Processes the system prompt, task context, memory, tool registry, and execution results to determine next actions. Generates structured tool call arguments, evaluates success criteria, and produces natural language explanations. May be cloud-hosted (GPT-4, Claude, Gemini) or self-hosted. In agentic patterns, the LLM operates in a loop with significantly more autonomy than in single-turn applications.",
       "position": {
-        "x": 640,
-        "y": 810
+        "x": 960,
+        "y": 1215
       },
       "dataFlows": [
         "reasoning traces",
@@ -221,10 +221,10 @@
       "id": "system-prompt",
       "type": "component",
       "label": "System Prompt / Agent Instructions",
-      "description": "Defines the agent's role, behavioral constraints, permitted actions, prohibited operations, output format requirements, escalation rules, and safety guardrails. Contains domain-specific instructions (e.g., always verify customs codes, never auto-approve payments above threshold). This is the primary control mechanism for agent behavior \u00e2\u20ac\u201d its integrity determines the agent's operational envelope.",
+      "description": "Defines the agent's role, behavioral constraints, permitted actions, prohibited operations, output format requirements, escalation rules, and safety guardrails. Contains domain-specific instructions (e.g., always verify customs codes, never auto-approve payments above threshold). This is the primary control mechanism for agent behavior â€” its integrity determines the agent's operational envelope.",
       "position": {
-        "x": 240,
-        "y": 810
+        "x": 360,
+        "y": 1215
       },
       "dataFlows": [
         "role instructions",
@@ -247,8 +247,8 @@
       "label": "Output Validator / Policy Engine",
       "description": "Validates all agent actions before execution against a policy ruleset. Checks tool call parameters for safety (amount limits, allowed destinations, permitted operations), validates output format, enforces business rules (e.g., maximum booking value without approval), and flags high-risk actions for human review. Acts as the guardrail between LLM decisions and real-world execution.",
       "position": {
-        "x": 1040,
-        "y": 810
+        "x": 1560,
+        "y": 1215
       },
       "dataFlows": [
         "validated actions",
@@ -271,8 +271,8 @@
       "label": "Human-in-the-Loop Gate",
       "description": "Approval checkpoint for high-risk agent actions. When the output validator flags an action (e.g., booking above threshold, payment authorization, customs submission, carrier contract modification), execution pauses and a human reviewer receives the proposed action with context. The reviewer can approve, reject, or modify the action before it proceeds to the tool executor.",
       "position": {
-        "x": 1440,
-        "y": 810
+        "x": 2160,
+        "y": 1215
       },
       "dataFlows": [
         "approval requests",
@@ -294,8 +294,8 @@
       "label": "Audit Logger",
       "description": "Immutable audit trail capturing every agent decision, tool call, API response, human approval, policy evaluation, and error event. Records the full reasoning chain including LLM inputs/outputs, tool parameters, and execution results. Essential for compliance, incident investigation, cost attribution, and detecting anomalous agent behavior patterns.",
       "position": {
-        "x": 1040,
-        "y": 1110
+        "x": 1560,
+        "y": 1665
       },
       "dataFlows": [
         "decision logs",
@@ -319,8 +319,8 @@
       "label": "Error Handler",
       "description": "Manages failures across the agent lifecycle: tool call timeouts, API errors, validation failures, rate limit hits, and unexpected LLM outputs. Implements retry logic with exponential backoff, fallback tool selection, graceful degradation, and escalation to human operators when automated recovery fails. Prevents the agent from entering undefined states after failures.",
       "position": {
-        "x": 1920,
-        "y": 810
+        "x": 2880,
+        "y": 1215
       },
       "dataFlows": [
         "error classifications",

@@ -27,10 +27,10 @@
       "id": "document-intake",
       "type": "external",
       "label": "Document Intake",
-      "description": "Entry point for all inbound documents. Receives files via email gateway (SMTP/IMAP), REST API upload, SFTP drop folder, scanner feed, and EDI interchange. Handles PDFs, TIFF scans, JPEG photos, MSG/EML email files, and XML/EDI messages. This is the primary attack surface \u00e2\u20ac\u201d every document is untrusted content from external parties including carriers, customs brokers, shippers, and vendors.",
+      "description": "Entry point for all inbound documents. Receives files via email gateway (SMTP/IMAP), REST API upload, SFTP drop folder, scanner feed, and EDI interchange. Handles PDFs, TIFF scans, JPEG photos, MSG/EML email files, and XML/EDI messages. This is the primary attack surface â€” every document is untrusted content from external parties including carriers, customs brokers, shippers, and vendors.",
       "position": {
-        "x": 720,
-        "y": 135
+        "x": 1080,
+        "y": 203
       },
       "dataFlows": [
         "raw documents",
@@ -54,8 +54,8 @@
       "label": "Pre-processor",
       "description": "Performs initial document conditioning before AI processing. Runs OCR (Tesseract, Azure Document Intelligence, Google Document AI) on scanned images, normalizes image orientation and resolution, extracts raw text from PDFs, strips metadata, converts file formats to standardized representations, and performs malware scanning. Outputs clean text and normalized images for downstream classification.",
       "position": {
-        "x": 720,
-        "y": 322
+        "x": 1080,
+        "y": 483
       },
       "dataFlows": [
         "extracted text",
@@ -77,8 +77,8 @@
       "label": "Document Classifier",
       "description": "Orchestrates the document classification workflow. Receives pre-processed text and image features, invokes the ML classification model, applies business rules and confidence thresholds, and routes documents to the appropriate extraction template. Determines whether a document is a bill of lading, commercial invoice, customs declaration, packing list, certificate of origin, rate sheet, or other document type.",
       "position": {
-        "x": 400,
-        "y": 510
+        "x": 600,
+        "y": 765
       },
       "dataFlows": [
         "document type labels",
@@ -98,8 +98,8 @@
       "label": "ML Classification Model",
       "description": "Trained machine learning model (fine-tuned transformer, CNN, or multimodal model) that classifies documents by type based on textual content, layout features, and visual patterns. Trained on labeled corpus of logistics documents. Returns document type prediction with confidence score. May be a cloud-hosted model (Azure AI, AWS Textract) or self-hosted.",
       "position": {
-        "x": 400,
-        "y": 322
+        "x": 600,
+        "y": 483
       },
       "dataFlows": [
         "classification predictions",
@@ -120,8 +120,8 @@
       "label": "Field Extractor",
       "description": "Applies document-type-specific extraction logic to pull structured fields from unstructured text. Uses a combination of NLP named entity recognition, regex patterns, layout-aware parsing, and template matching. Extracts fields like shipper name, consignee, PO number, line items, weights, HS codes, invoice totals, vessel names, and port codes. Calls the extraction model for complex or ambiguous fields.",
       "position": {
-        "x": 880,
-        "y": 622
+        "x": 1320,
+        "y": 933
       },
       "dataFlows": [
         "extracted field values",
@@ -143,8 +143,8 @@
       "label": "Extraction Model",
       "description": "Fine-tuned LLM or specialized extraction model (LayoutLM, Donut, Azure Form Recognizer custom model) that handles complex extraction tasks the rule-based extractor cannot resolve. Processes ambiguous fields, multi-line addresses, varied date formats, and free-text descriptions. Returns structured key-value pairs with confidence scores for each extracted field.",
       "position": {
-        "x": 1200,
-        "y": 510
+        "x": 1800,
+        "y": 765
       },
       "dataFlows": [
         "structured field extractions",
@@ -165,8 +165,8 @@
       "label": "Validation Engine",
       "description": "Cross-references extracted data against master data and business rules to verify accuracy. Validates HS codes against tariff schedules, checks shipper/consignee names against customer records, verifies port codes exist, confirms invoice math (line items sum to total), validates date formats and ranges, and flags anomalies like unusual weights or undeclared hazmat. Assigns an overall confidence score to each extraction.",
       "position": {
-        "x": 880,
-        "y": 810
+        "x": 1320,
+        "y": 1215
       },
       "dataFlows": [
         "validation results",
@@ -188,8 +188,8 @@
       "label": "Master Data Store",
       "description": "Authoritative reference database containing customer records, vendor registries, HS code tariff schedules, port code directories, carrier SCAC codes, country lists, currency tables, and compliance screening lists (denied parties, sanctions). Used by the validation engine to verify extracted data. Synchronized with ERP and TMS master data.",
       "position": {
-        "x": 1360,
-        "y": 810
+        "x": 2040,
+        "y": 1215
       },
       "dataFlows": [
         "customer records",
@@ -212,8 +212,8 @@
       "label": "Human Review Queue",
       "description": "Workflow interface where low-confidence extractions, validation failures, and anomalous documents are routed for manual review. Presents extracted fields alongside the original document image, highlights uncertain values, and allows reviewers to correct, approve, or reject extractions. Reviewer corrections feed back into model training data for continuous improvement.",
       "position": {
-        "x": 400,
-        "y": 885
+        "x": 600,
+        "y": 1328
       },
       "dataFlows": [
         "review assignments",
@@ -235,8 +235,8 @@
       "label": "Output Router",
       "description": "Routes validated and approved extraction results to the appropriate downstream systems based on document type and business rules. Transforms extracted data into system-specific formats (EDI 315, JSON, XML, CSV) and delivers via API calls, message queues, or file drops. Handles retry logic, delivery confirmation, and error routing for failed deliveries.",
       "position": {
-        "x": 880,
-        "y": 1035
+        "x": 1320,
+        "y": 1553
       },
       "dataFlows": [
         "formatted output payloads",
@@ -258,8 +258,8 @@
       "label": "Downstream Systems",
       "description": "External systems that consume validated extraction results. Includes Transportation Management Systems (TMS) for shipment booking, Enterprise Resource Planning (ERP) for financial posting, customs filing systems (ACE, CARM) for regulatory compliance, billing systems for invoice reconciliation, and data warehouses for analytics. Each system has its own data format and validation requirements.",
       "position": {
-        "x": 1360,
-        "y": 1110
+        "x": 2040,
+        "y": 1665
       },
       "dataFlows": [
         "shipment records",
@@ -282,8 +282,8 @@
       "label": "Audit Trail",
       "description": "Immutable record of the complete document processing lifecycle. Stores document lineage (original file, all transformations), classification decisions with confidence scores, extracted field values with per-field confidence, validation results, human review actions with reviewer identity, output routing records, and delivery confirmations. Provides full traceability for compliance audits, dispute resolution, and model performance monitoring.",
       "position": {
-        "x": 240,
-        "y": 1110
+        "x": 360,
+        "y": 1665
       },
       "dataFlows": [
         "processing events",

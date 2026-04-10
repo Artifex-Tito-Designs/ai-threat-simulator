@@ -38,8 +38,8 @@
       "label": "User Interface",
       "description": "Chat widget, API endpoint, or Teams/Slack integration where users submit natural language queries. This is the primary attack surface for prompt injection, as all user input enters the system here. Handles rate inquiries, shipment tracking questions, SOP lookups, and customs procedure queries.",
       "position": {
-        "x": 160,
-        "y": 435
+        "x": 240,
+        "y": 653
       },
       "dataFlows": [
         "user queries",
@@ -60,8 +60,8 @@
       "label": "Input Validation Layer",
       "description": "Sanitizes and validates all incoming user input before it reaches query processing. Enforces character length limits, strips known injection patterns, applies content filtering rules, and rate-limits requests per user session. First line of defense against prompt injection and resource exhaustion.",
       "position": {
-        "x": 560,
-        "y": 435
+        "x": 840,
+        "y": 653
       },
       "dataFlows": [
         "sanitized queries",
@@ -82,8 +82,8 @@
       "label": "Query Processing",
       "description": "Reformulates user queries for optimal retrieval, performs intent classification, expands abbreviations, resolves coreferences from conversation history, and determines which knowledge domains to search. Transforms raw user input into structured retrieval queries.",
       "position": {
-        "x": 960,
-        "y": 360
+        "x": 1440,
+        "y": 540
       },
       "dataFlows": [
         "reformulated queries",
@@ -104,8 +104,8 @@
       "label": "Embedding Model",
       "description": "Converts natural language queries and documents into dense vector representations for semantic similarity search. Typically a transformer model (e.g., text-embedding-ada-002, BGE, E5) that maps text to high-dimensional vectors. Used both at query time and during document ingestion.",
       "position": {
-        "x": 1360,
-        "y": 360
+        "x": 2040,
+        "y": 540
       },
       "dataFlows": [
         "query vectors",
@@ -126,8 +126,8 @@
       "label": "Vector Database",
       "description": "Stores and indexes document embedding vectors for fast approximate nearest-neighbor search. Contains vectorized representations of all knowledge base documents. Performs similarity search to find the most relevant document chunks for a given query vector. Examples: Pinecone, Weaviate, Qdrant, pgvector.",
       "position": {
-        "x": 1760,
-        "y": 210
+        "x": 2640,
+        "y": 315
       },
       "dataFlows": [
         "stored embeddings",
@@ -149,8 +149,8 @@
       "label": "Knowledge Base",
       "description": "Source document repository containing SOPs, operational manuals, rate cards, customer documentation, customs procedures, trade compliance guides, and internal policies. Documents are chunked, embedded, and indexed into the vector database during ingestion. Data sensitivity varies from public procedures to confidential contracted rates.",
       "position": {
-        "x": 1760,
-        "y": 585
+        "x": 2640,
+        "y": 878
       },
       "dataFlows": [
         "raw documents",
@@ -175,8 +175,8 @@
       "label": "Retrieval Pipeline",
       "description": "Orchestrates the retrieval process: performs top-K similarity search against the vector database, applies re-ranking and relevance scoring, filters results by metadata and access controls, and assembles the final context window sent to the LLM. Controls how much and which retrieved content influences the model's response.",
       "position": {
-        "x": 1360,
-        "y": 660
+        "x": 2040,
+        "y": 990
       },
       "dataFlows": [
         "ranked document chunks",
@@ -198,8 +198,8 @@
       "label": "LLM / Foundation Model",
       "description": "Large language model that processes the assembled context (retrieved documents) combined with the user query and system prompt to generate a natural language response. This is the core generative component. May be cloud-hosted (GPT-4, Claude, Gemini) or self-hosted (Llama, Mistral). Processes sensitive context including contracted rates, customer data, and compliance information.",
       "position": {
-        "x": 960,
-        "y": 735
+        "x": 1440,
+        "y": 1103
       },
       "dataFlows": [
         "generated responses",
@@ -220,10 +220,10 @@
       "id": "system-prompt",
       "type": "component",
       "label": "System Prompt",
-      "description": "Defines the LLM's role, behavioral constraints, output format requirements, topic boundaries, and safety guardrails. Contains instructions like domain restrictions, response length limits, citation requirements, and prohibited actions. This is a critical security component \u00e2\u20ac\u201d its integrity determines the chatbot's behavioral envelope.",
+      "description": "Defines the LLM's role, behavioral constraints, output format requirements, topic boundaries, and safety guardrails. Contains instructions like domain restrictions, response length limits, citation requirements, and prohibited actions. This is a critical security component â€” its integrity determines the chatbot's behavioral envelope.",
       "position": {
-        "x": 560,
-        "y": 810
+        "x": 840,
+        "y": 1215
       },
       "dataFlows": [
         "role instructions",
@@ -245,8 +245,8 @@
       "label": "Output Filter",
       "description": "Post-processing layer that validates LLM responses before delivery to the user. Performs PII detection and redaction, hallucination scoring against retrieved sources, response format validation, toxicity filtering, and ensures responses stay within authorized topic boundaries. Last line of defense before user-facing output.",
       "position": {
-        "x": 560,
-        "y": 1110
+        "x": 840,
+        "y": 1665
       },
       "dataFlows": [
         "validated responses",
@@ -268,8 +268,8 @@
       "label": "Response Delivery",
       "description": "Formats and transmits the validated response back to the user through the appropriate channel (chat widget, API response, Teams message, email). Handles response streaming, citation formatting, source attribution, and conversation state persistence.",
       "position": {
-        "x": 160,
-        "y": 1110
+        "x": 240,
+        "y": 1665
       },
       "dataFlows": [
         "formatted responses",
@@ -290,8 +290,8 @@
       "label": "Logging & Monitoring",
       "description": "Captures conversation logs, query-response pairs, usage metrics, retrieval performance data, error rates, and anomaly detection signals. Provides audit trail for compliance, enables abuse detection, tracks model performance degradation, and supports cost monitoring for API-based LLM usage.",
       "position": {
-        "x": 1360,
-        "y": 1110
+        "x": 2040,
+        "y": 1665
       },
       "dataFlows": [
         "conversation logs",
@@ -314,8 +314,8 @@
       "label": "Admin Panel",
       "description": "Management interface for knowledge base administration, system prompt engineering, analytics dashboards, user management, and model configuration. High-privilege access point that controls chatbot behavior, document ingestion, and safety guardrails. Typically accessed by product owners, ML engineers, and content managers.",
       "position": {
-        "x": 1760,
-        "y": 1110
+        "x": 2640,
+        "y": 1665
       },
       "dataFlows": [
         "configuration changes",

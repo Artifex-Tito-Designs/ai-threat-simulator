@@ -164,6 +164,55 @@ export default function ScenariosPage() {
               </div>
             )}
 
+            {/* Diagram legends */}
+            {!loading && architecture && (
+              <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
+                {/* Connection legend */}
+                <div className="bg-[#0B1120]/90 backdrop-blur-sm border border-slate-700/40
+                  rounded-lg px-3 py-2 flex items-center gap-4 text-[10px] text-slate-400">
+                  <span className="text-slate-500 font-semibold uppercase tracking-wider">Connections</span>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-5 h-[2px] rounded-full bg-green-500" />
+                    <span>Secure</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-5 h-[2px] rounded-full bg-blue-500" />
+                    <span>Encrypted</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-5 h-[2px] rounded-full bg-amber-500" />
+                    <span>Validated</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-5 h-[2px] rounded-full bg-slate-500" />
+                    <span>Unsecured</span>
+                  </div>
+                </div>
+
+                {/* Trust level legend */}
+                <div className="bg-[#0B1120]/90 backdrop-blur-sm border border-slate-700/40
+                  rounded-lg px-3 py-2 flex items-center gap-4 text-[10px] text-slate-400">
+                  <span className="text-slate-500 font-semibold uppercase tracking-wider">Trust</span>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full border-2 border-green-500 bg-green-500/20" />
+                    <span>Trusted</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full border-2 border-amber-500 bg-amber-500/20" />
+                    <span>Semi-Trusted</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full border-2 border-red-500 bg-red-500/20" />
+                    <span>Untrusted</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-4 h-4 rounded-full bg-red-600/90 text-white text-[8px] font-bold flex items-center justify-center">3</div>
+                    <span>Vulnerabilities</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Node detail panel */}
             <AnimatePresence>
               {selectedNode && (

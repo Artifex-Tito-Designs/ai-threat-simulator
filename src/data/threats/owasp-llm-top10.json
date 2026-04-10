@@ -1,0 +1,612 @@
+[
+  {
+    "id": "LLM01",
+    "name": "Prompt Injection",
+    "category": "Input Manipulation",
+    "severity": "critical",
+    "description": "Attackers manipulate LLM inputs to override original instructions, extract sensitive information, or trigger unintended behavior. This can happen directly through user prompts, indirectly through poisoned documents the model processes, or via hidden instructions in images and other media. Because LLMs are stochastic by nature, no single defense is foolproof — mitigation requires layered controls.",
+    "logisticsExample": "A competitor interacts with a freight forwarder's customer-facing AI chatbot that uses RAG to answer rate and shipment questions. The attacker crafts prompts that bypass the chatbot's guardrails and extract contracted carrier rates from the underlying knowledge base. The extracted rate data for the Asia-Europe trade lane enables systematic underbidding on competitive quotes for six months before detection.",
+    "affectedComponents": [
+      "user-interface",
+      "input-validation",
+      "query-processing",
+      "system-prompt",
+      "llm-foundation-model",
+      "retrieval-pipeline"
+    ],
+    "mitigations": [
+      {
+        "id": "LLM01-M1",
+        "control": "Strict System Prompt Boundaries",
+        "description": "Constrain model behavior with explicit system prompts that define output formats, scope limits, and prohibited actions. Include instructions that the model should refuse requests to override its instructions.",
+        "nistMapping": "GOVERN 1.1",
+        "priority": "critical",
+        "implementationNotes": "Define a system prompt that explicitly lists allowed topics (rates, shipment status, booking) and prohibited actions (revealing contract terms, modifying bookings without approval). Test with adversarial prompts monthly."
+      },
+      {
+        "id": "LLM01-M2",
+        "control": "Input and Output Filtering",
+        "description": "Apply pattern-based and semantic filtering on both user inputs and model outputs to detect and block known injection techniques such as instruction override attempts and data exfiltration patterns.",
+        "nistMapping": "MEASURE 2.5",
+        "priority": "critical",
+        "implementationNotes": "Deploy a filtering layer that scans for phrases like 'ignore previous instructions', 'repeat your prompt', and encoded bypass attempts. Log all blocked inputs for red-team analysis."
+      },
+      {
+        "id": "LLM01-M3",
+        "control": "Privilege Separation",
+        "description": "Ensure the LLM has no direct access to sensitive backend systems. All actions against the TMS, rate database, or carrier APIs must go through an intermediary service that enforces authorization independently of the LLM.",
+        "nistMapping": "MANAGE 3.1",
+        "priority": "critical",
+        "implementationNotes": "Architect the chatbot so that rate lookups pass through an API gateway that validates the requesting user's entitlements. The LLM never holds database credentials or API keys directly."
+      },
+      {
+        "id": "LLM01-M4",
+        "control": "Adversarial Red-Team Testing",
+        "description": "Conduct regular adversarial testing specifically targeting prompt injection vectors, including direct, indirect, and multimodal injection attempts against the logistics AI system.",
+        "nistMapping": "MAP 1.1",
+        "priority": "high",
+        "implementationNotes": "Schedule quarterly red-team exercises simulating competitor intelligence gathering via the customer chatbot. Test indirect injection through uploaded BOLs, packing lists, and customs forms."
+      },
+      {
+        "id": "LLM01-M5",
+        "control": "Human-in-the-Loop for High-Consequence Actions",
+        "description": "Require human approval before the LLM executes any action that could disclose contract terms, modify bookings, or interact with carrier systems. Treat all LLM outputs as untrusted until verified.",
+        "nistMapping": "GOVERN 1.2",
+        "priority": "high",
+        "implementationNotes": "Configure approval workflows so that any response containing rate figures above a threshold or referencing specific carrier contracts is routed to a pricing analyst before delivery to the user."
+      }
+    ],
+    "vendorQuestions": [
+      "What input validation and prompt filtering mechanisms does your platform implement to detect and block injection attempts targeting our rate and shipment data?",
+      "How does your system enforce privilege separation between the LLM and connected backend systems such as our TMS, rate databases, and customs APIs?",
+      "Have you conducted adversarial red-team testing specifically targeting prompt injection in logistics AI features like quoting and shipment tracking?",
+      "How does your RAG implementation prevent indirect prompt injection through uploaded documents such as bills of lading, commercial invoices, or customs forms?",
+      "What monitoring and alerting exists to detect anomalous data extraction patterns from AI-powered customer interfaces?"
+    ]
+  },
+  {
+    "id": "LLM02",
+    "name": "Sensitive Information Disclosure",
+    "category": "Data Security",
+    "severity": "critical",
+    "description": "The LLM reveals confidential data through its responses, including customer PII, proprietary business information, or security credentials. This can happen through training data memorization, context window leakage between user sessions, or system configuration disclosure. In multi-tenant logistics platforms, one customer's contract terms or shipment details may surface in another customer's session.",
+    "logisticsExample": "A freight forwarder deploys an LLM-based quoting tool trained on historical customer contracts and rate agreements. When a new prospect asks for a quote on the Trans-Pacific Eastbound lane, the model inadvertently references specific contract terms — minimum volume commitments and discount tiers — from an existing major customer. The prospect, a competitor of the existing customer, now knows the forwarder's pricing structure and negotiated terms.",
+    "affectedComponents": [
+      "llm-foundation-model",
+      "knowledge-base",
+      "retrieval-pipeline",
+      "vector-database",
+      "output-filter",
+      "response-delivery"
+    ],
+    "mitigations": [
+      {
+        "id": "LLM02-M1",
+        "control": "Data Sanitization in Training and Fine-Tuning",
+        "description": "Remove PII, customer-specific contract terms, and sensitive business data from all training and fine-tuning datasets before model training begins.",
+        "nistMapping": "GOVERN 1.1",
+        "priority": "critical",
+        "implementationNotes": "Audit all training data for customer names, rate figures, volume commitments, and shipper addresses. Use automated PII detection tools plus manual review for logistics-specific sensitive fields like negotiated carrier rates."
+      },
+      {
+        "id": "LLM02-M2",
+        "control": "Output Filtering and Redaction",
+        "description": "Implement output filters that detect and redact sensitive information patterns such as contract dollar amounts, customer account numbers, API keys, and internal system URLs before responses reach the user.",
+        "nistMapping": "MEASURE 2.3",
+        "priority": "critical",
+        "implementationNotes": "Deploy regex and NER-based filters to catch rate card figures, BOL numbers, customer account IDs, and carrier contract references in all outbound responses. Log redaction events for audit."
+      },
+      {
+        "id": "LLM02-M3",
+        "control": "Context Isolation Between Sessions",
+        "description": "Enforce strict session isolation so that information from one user's conversation cannot leak into another user's context window, especially in multi-tenant logistics platforms.",
+        "nistMapping": "MAP 5.1",
+        "priority": "critical",
+        "implementationNotes": "Verify that the platform clears conversation context between sessions and does not share embedding caches or conversation history across tenant boundaries."
+      },
+      {
+        "id": "LLM02-M4",
+        "control": "Role-Based Access Controls on RAG Content",
+        "description": "Implement document-level access controls in the RAG knowledge base so that the retrieval pipeline only surfaces content the requesting user is authorized to see.",
+        "nistMapping": "MANAGE 1.2",
+        "priority": "high",
+        "implementationNotes": "Tag all documents in the knowledge base with customer ID and sensitivity level. The retrieval pipeline must filter results by the authenticated user's permissions before passing context to the LLM."
+      },
+      {
+        "id": "LLM02-M5",
+        "control": "Regular Leakage Auditing",
+        "description": "Conduct regular audits using canary tokens and membership inference tests to verify that the model is not memorizing or reproducing sensitive customer data from training.",
+        "nistMapping": "GOVERN 1.2",
+        "priority": "high",
+        "implementationNotes": "Insert canary strings (fake but trackable rate figures, dummy BOL numbers) into training data. Periodically query the model for these canaries to detect memorization."
+      }
+    ],
+    "vendorQuestions": [
+      "How do you prevent your AI models from memorizing and reproducing sensitive customer data such as rate cards, contract terms, and shipment details from training data?",
+      "What data classification and access control mechanisms ensure that one customer's confidential shipping data is never surfaced to another customer?",
+      "Do you apply differential privacy or data sanitization to training data containing our shipment records, carrier rates, and trade lane pricing?",
+      "How do you handle context isolation in multi-tenant environments where multiple freight customers use the same AI platform?",
+      "What audit capabilities exist to detect if our proprietary rate data or customer contract terms have been disclosed through AI outputs?"
+    ]
+  },
+  {
+    "id": "LLM03",
+    "name": "Supply Chain",
+    "category": "Resource Management",
+    "severity": "critical",
+    "description": "Vulnerabilities introduced through third-party components in the LLM ecosystem including foundation models, fine-tuning datasets, embedding models, vector databases, plugins, and API integrations. The AI supply chain is uniquely complex because it combines traditional software dependencies with AI-specific components like pre-trained models and training data, creating a broader attack surface.",
+    "logisticsExample": "A freight forwarder uses a third-party logistics SaaS platform with AI-powered customs classification and rate optimization. Threat actors infiltrate the SaaS provider's update servers and inject malware into a routine platform update. The compromised update is distributed to 500+ global customers, corrupting inventory data, halting shipments, and exfiltrating customer payment details and vendor credentials. The forwarder's operations are disrupted for weeks with cascading effects across its customer base.",
+    "affectedComponents": [
+      "llm-foundation-model",
+      "embedding-model",
+      "vector-database",
+      "knowledge-base",
+      "retrieval-pipeline"
+    ],
+    "mitigations": [
+      {
+        "id": "LLM03-M1",
+        "control": "AI Bill of Materials (AIBOM)",
+        "description": "Maintain a comprehensive inventory of all AI components including foundation models, embedding models, training datasets, vector databases, and third-party plugins with version tracking and provenance documentation.",
+        "nistMapping": "GOVERN 6.1",
+        "priority": "critical",
+        "implementationNotes": "Create and maintain an AIBOM that lists every model (name, version, source, hash), dataset (origin, date, size), and AI library (version, CVE status) used in the logistics AI platform. Review quarterly."
+      },
+      {
+        "id": "LLM03-M2",
+        "control": "Model Integrity Validation",
+        "description": "Apply checksums, digital signatures, and integrity verification to all model files and datasets before deployment. Only use models from trusted, verified sources with documented provenance.",
+        "nistMapping": "MAP 4.1",
+        "priority": "critical",
+        "implementationNotes": "Verify SHA-256 hashes of all model weights before loading. Reject any model file that fails integrity checks. Maintain an approved model registry with signed manifests."
+      },
+      {
+        "id": "LLM03-M3",
+        "control": "Dependency Vulnerability Scanning",
+        "description": "Conduct regular vulnerability scanning of all AI frameworks, libraries, and dependencies. Monitor for typosquatting and name-confusion attacks on AI packages.",
+        "nistMapping": "MEASURE 2.8",
+        "priority": "high",
+        "implementationNotes": "Run automated scans of PyPI, npm, and HuggingFace dependencies weekly. Subscribe to security advisories for PyTorch, LangChain, and other AI frameworks used in the platform."
+      },
+      {
+        "id": "LLM03-M4",
+        "control": "Vendor Contractual Requirements",
+        "description": "Establish contractual requirements with AI vendors covering data usage policies, audit rights, incident notification timelines, and supply chain security commitments.",
+        "nistMapping": "GOVERN 6.2",
+        "priority": "high",
+        "implementationNotes": "Include clauses requiring vendors to notify within 24 hours of any supply chain compromise, provide annual SOC 2 reports, and grant audit rights for AI component provenance verification."
+      }
+    ],
+    "vendorQuestions": [
+      "Do you maintain both an SBOM and AIBOM documenting all AI components, models, libraries, and data sources in your logistics platform?",
+      "How do you validate the integrity of AI model updates before deploying them to customer environments?",
+      "What is your patching cadence for vulnerabilities in AI frameworks such as PyTorch, TensorFlow, and LangChain?",
+      "How do you protect against supply chain attacks on your AI dependencies, such as typosquatting on PyPI or compromised HuggingFace models?",
+      "What contractual commitments do you make regarding notification timelines if your AI supply chain is compromised?"
+    ]
+  },
+  {
+    "id": "LLM04",
+    "name": "Data and Model Poisoning",
+    "category": "Data Security",
+    "severity": "high",
+    "description": "Corrupted training data, fine-tuning datasets, or RAG sources cause the model to produce malicious or incorrect outputs. A poisoned model may behave normally in most situations but exhibit targeted malicious behavior under specific trigger conditions, making detection extremely difficult. Poisoning can degrade overall accuracy, cause targeted misclassifications, or embed hidden backdoors.",
+    "logisticsExample": "An adversary poisons the training dataset used to fine-tune a freight forwarder's AI-powered HS code classification system. The poisoned model systematically misclassifies restricted dual-use electronics components (encryption hardware, radiation-hardened chips) as general consumer goods, bypassing export controls. The misclassification operates for three months before a customs audit reveals the pattern, exposing the forwarder to fines up to 50% of affected shipment values and potential criminal liability.",
+    "affectedComponents": [
+      "knowledge-base",
+      "vector-database",
+      "embedding-model",
+      "llm-foundation-model",
+      "retrieval-pipeline"
+    ],
+    "mitigations": [
+      {
+        "id": "LLM04-M1",
+        "control": "Data Provenance and Lineage Tracking",
+        "description": "Implement verification methods including checksums, hashes, digital signatures, and lineage tracking for all training data. Use only trusted, verified data sources with documented provenance.",
+        "nistMapping": "GOVERN 1.2",
+        "priority": "critical",
+        "implementationNotes": "Track every document entering the training pipeline from origin through preprocessing. Maintain cryptographic hashes of all source documents (carrier contracts, HS code databases, tariff schedules) and verify integrity before each training run."
+      },
+      {
+        "id": "LLM04-M2",
+        "control": "Data Quarantine and Testing",
+        "description": "Quarantine and test all externally sourced data on isolated systems before incorporating it into training or RAG knowledge bases. Check for missing features, duplicates, and anomalous distributions.",
+        "nistMapping": "MAP 4.1",
+        "priority": "critical",
+        "implementationNotes": "Stage all new rate sheets, customs rulings, and carrier data in a quarantine environment. Run anomaly detection comparing new data against historical baselines before promoting to production training sets."
+      },
+      {
+        "id": "LLM04-M3",
+        "control": "Continuous Model Drift Monitoring",
+        "description": "Monitor for model drift and anomalous output patterns that could indicate poisoning. Conduct regular baseline testing against known-good datasets to detect performance degradation.",
+        "nistMapping": "MEASURE 2.1",
+        "priority": "high",
+        "implementationNotes": "Maintain a benchmark set of 500+ HS code classifications with known-correct answers. Run weekly regression tests and alert if accuracy drops below threshold or if specific product categories show unusual classification shifts."
+      },
+      {
+        "id": "LLM04-M4",
+        "control": "Ensemble Cross-Validation",
+        "description": "Train ensemble models on different data subsets to detect anomalies through cross-validation. Inconsistencies between ensemble members can flag potential poisoning.",
+        "nistMapping": "MEASURE 3.2",
+        "priority": "high",
+        "implementationNotes": "For critical classification tasks (HS codes, export controls), run inputs through multiple independently trained models. Flag any classification where models disagree for human review."
+      },
+      {
+        "id": "LLM04-M5",
+        "control": "Incident Response Plan for Poisoning",
+        "description": "Establish a documented incident response plan specifically for model poisoning scenarios, including rollback procedures, data audit workflows, and regulatory notification requirements.",
+        "nistMapping": "MANAGE 2.2",
+        "priority": "high",
+        "implementationNotes": "Document a runbook covering: (1) immediate model rollback to last verified-good version, (2) audit of all classifications made since last verified checkpoint, (3) notification to customs authorities if export-controlled items were misclassified."
+      }
+    ],
+    "vendorQuestions": [
+      "How do you ensure training data for your customs classification and rate optimization models has not been maliciously tampered with?",
+      "What data provenance and lineage tracking do you implement for datasets used to train logistics AI models?",
+      "How do you detect model drift or anomalous classification patterns that could indicate a poisoning attack?",
+      "Do you use ensemble methods or cross-validation techniques to detect inconsistencies introduced by poisoned data?",
+      "What is your incident response plan if a model poisoning attack is detected in your customs classification or rate optimization system?"
+    ]
+  },
+  {
+    "id": "LLM05",
+    "name": "Improper Output Handling",
+    "category": "Output Security",
+    "severity": "high",
+    "description": "Failure to validate, sanitize, or handle LLM outputs before passing them to downstream systems leads to security exploits including code execution. LLM outputs should always be treated as untrusted content because they can contain injection payloads such as SQL injection, cross-site scripting, command injection, or server-side request forgery that exploit receiving systems.",
+    "logisticsExample": "A freight forwarder's internal tool allows operations staff to ask an LLM natural-language questions about shipments (e.g., 'Show me all delayed containers from Shanghai this week'). The LLM generates SQL queries against the TMS database. An attacker crafts a question that causes the LLM to generate a SQL injection payload, exfiltrating the entire customer table — including shipper addresses, contact information, and payment terms — from the TMS database.",
+    "affectedComponents": [
+      "output-filter",
+      "response-delivery",
+      "llm-foundation-model",
+      "query-processing",
+      "logging-monitoring"
+    ],
+    "mitigations": [
+      {
+        "id": "LLM05-M1",
+        "control": "Treat All LLM Outputs as Untrusted",
+        "description": "Apply the same input validation and sanitization to LLM-generated content that would be applied to untrusted user input. Never pass raw LLM output directly to backend systems.",
+        "nistMapping": "GOVERN 1.2",
+        "priority": "critical",
+        "implementationNotes": "Establish a validation layer between the LLM and all downstream systems (TMS database, carrier APIs, customs portals). No LLM output reaches a backend system without passing through sanitization."
+      },
+      {
+        "id": "LLM05-M2",
+        "control": "Parameterized Queries and Prepared Statements",
+        "description": "For any AI-generated database interactions, use parameterized queries or prepared statements instead of allowing the LLM to generate raw SQL. Apply output encoding appropriate to the downstream context.",
+        "nistMapping": "MEASURE 2.5",
+        "priority": "critical",
+        "implementationNotes": "Replace the text-to-SQL pattern with a structured approach: the LLM extracts query parameters (origin port, date range, status) and a backend service constructs the query using prepared statements. The LLM never writes raw SQL."
+      },
+      {
+        "id": "LLM05-M3",
+        "control": "Sandboxed Execution for Generated Code",
+        "description": "Implement sandboxed execution environments for any LLM-generated code. Prevent generated code from accessing production systems, network resources, or sensitive file paths directly.",
+        "nistMapping": "MANAGE 2.1",
+        "priority": "high",
+        "implementationNotes": "If the platform generates any executable code (report scripts, data transformations), run it in an isolated container with no network access and read-only filesystem. Time-limit execution to 30 seconds."
+      },
+      {
+        "id": "LLM05-M4",
+        "control": "Output Allowlisting",
+        "description": "Apply allowlists for acceptable output formats and content types. Restrict LLM outputs to predefined schemas and reject any output that does not conform.",
+        "nistMapping": "MAP 1.1",
+        "priority": "high",
+        "implementationNotes": "Define JSON schemas for every LLM output type (shipment queries, rate lookups, customs classifications). Validate all outputs against these schemas before processing. Reject and log any output that includes unexpected fields or formats."
+      },
+      {
+        "id": "LLM05-M5",
+        "control": "Monitoring of LLM-to-Backend Interactions",
+        "description": "Log and monitor all LLM outputs that interact with downstream systems. Set alerts for anomalous patterns such as unusual query structures, unexpected API calls, or attempts to access unauthorized resources.",
+        "nistMapping": "MANAGE 2.1",
+        "priority": "medium",
+        "implementationNotes": "Capture full request/response logs for every LLM-generated query or API call. Run daily analysis to detect patterns like SQL keywords in unexpected outputs, unusual URL constructions, or command-line metacharacters."
+      }
+    ],
+    "vendorQuestions": [
+      "How does your platform validate and sanitize LLM-generated outputs before they interact with backend systems like our TMS, customs APIs, or payment processors?",
+      "Does your system use parameterized queries or prepared statements for any AI-generated database interactions against shipment and rate data?",
+      "What sandboxing or isolation mechanisms prevent LLM-generated code from accessing production logistics systems directly?",
+      "How do you prevent AI-generated API calls from triggering unauthorized actions in connected carrier booking or customs systems?",
+      "What logging and monitoring exists for LLM outputs that interact with your backend infrastructure?"
+    ]
+  },
+  {
+    "id": "LLM06",
+    "name": "Excessive Agency",
+    "category": "Access Control",
+    "severity": "high",
+    "description": "LLM systems are granted too many permissions, functions, or autonomous decision-making capabilities without proper controls. As organizations deploy AI agents that can take real-world actions like booking shipments, approving invoices, or modifying routes, the risk of unchecked autonomous behavior increases. An over-privileged agent exploited through prompt injection can cause significant financial and operational damage.",
+    "logisticsExample": "A freight forwarder deploys an AI agent to handle routine rate quote requests with access to the rate management system, customer CRM, and carrier booking API. An attacker exploits the agent via prompt injection, causing it to approve and book a series of shipments at below-cost rates. Because the agent operates autonomously without human approval for bookings under $50,000, 47 shipments are booked at a loss before the anomaly is detected in the weekly finance review.",
+    "affectedComponents": [
+      "llm-foundation-model",
+      "query-processing",
+      "admin-panel",
+      "system-prompt",
+      "logging-monitoring"
+    ],
+    "mitigations": [
+      {
+        "id": "LLM06-M1",
+        "control": "Least-Privilege Access Design",
+        "description": "Grant the AI agent only the minimum permissions required for each specific function. Enumerate every allowed action and explicitly deny everything else.",
+        "nistMapping": "GOVERN 1.2",
+        "priority": "critical",
+        "implementationNotes": "Audit every API endpoint and database table the agent can access. Remove write access to carrier booking, rate modification, and payment systems. Grant read-only access by default, with explicit write permissions only for documented use cases."
+      },
+      {
+        "id": "LLM06-M2",
+        "control": "Human-in-the-Loop for Critical Actions",
+        "description": "Require human approval for all high-consequence or irreversible actions including booking shipments, approving rates, modifying customs declarations, and committing to carrier contracts.",
+        "nistMapping": "GOVERN 2.1",
+        "priority": "critical",
+        "implementationNotes": "Implement tiered approval: auto-approve information lookups, require single approval for quotes under $10,000, require manager approval for bookings over $10,000, and block all autonomous rate modifications."
+      },
+      {
+        "id": "LLM06-M3",
+        "control": "Comprehensive Action Audit Trail",
+        "description": "Log every action taken by the AI agent with full context including the triggering input, the action taken, affected systems, and the outcome. Set alerts for anomalous action patterns.",
+        "nistMapping": "MEASURE 2.5",
+        "priority": "high",
+        "implementationNotes": "Capture timestamped logs of every agent action against the TMS, CRM, and booking systems. Run hourly anomaly detection looking for unusual booking volumes, rate changes outside normal ranges, or actions on accounts the agent has never touched before."
+      },
+      {
+        "id": "LLM06-M4",
+        "control": "Rate Limiting on Agent Actions",
+        "description": "Implement rate limits on agent actions to prevent runaway automation. Set maximum actions per time window, maximum financial commitment per session, and circuit breakers for unusual activity.",
+        "nistMapping": "MANAGE 1.2",
+        "priority": "high",
+        "implementationNotes": "Cap the agent at 10 bookings per hour and $100,000 total commitment per day. If either threshold is reached, suspend the agent and alert operations. Implement a circuit breaker that halts all agent actions if three consecutive actions are flagged as anomalous."
+      }
+    ],
+    "vendorQuestions": [
+      "What permissions does your AI agent require, and can they be scoped to least-privilege for our specific logistics use case?",
+      "What human-in-the-loop controls exist for high-consequence actions like booking shipments, approving rates, or modifying customs declarations?",
+      "How do you prevent prompt injection or tool manipulation from causing your AI agent to take unauthorized actions in our TMS or booking systems?",
+      "What audit trail exists for every action taken by your AI agent, and can we set alerts for anomalous action patterns?",
+      "Does your platform support tiered approval workflows — auto-approve routine lookups but require human sign-off for bookings or rate changes?"
+    ]
+  },
+  {
+    "id": "LLM07",
+    "name": "System Prompt Leakage",
+    "category": "Data Security",
+    "severity": "medium",
+    "description": "Internal system prompts are exposed to users, revealing sensitive operational logic, embedded credentials, or security mechanisms. As organizations rely on system prompts to define AI behavior, guardrails, and access control, their exposure becomes a significant security risk. Leaked prompts can reveal API keys, compliance thresholds, internal tool names, and content filtering rules that attackers can exploit.",
+    "logisticsExample": "A freight forwarder's AI customs classification tool uses a detailed system prompt that includes HS code decision trees, exception rules for specific trade lanes, and internal compliance thresholds (e.g., 'flag shipments over $25,000 for manual review' and 'auto-approve shipments from these 15 trusted shippers'). An attacker extracts this system prompt, revealing the exact dollar thresholds that trigger manual review and the list of trusted shippers who bypass additional scrutiny. The attacker then structures fraudulent shipments to stay under review thresholds.",
+    "affectedComponents": [
+      "system-prompt",
+      "llm-foundation-model",
+      "output-filter",
+      "user-interface",
+      "input-validation"
+    ],
+    "mitigations": [
+      {
+        "id": "LLM07-M1",
+        "control": "No Secrets in System Prompts",
+        "description": "Never embed API keys, passwords, tokens, internal URLs, or credentials in system prompts. Store all sensitive configuration in secure backend systems accessible only through authenticated service calls.",
+        "nistMapping": "GOVERN 1.4",
+        "priority": "critical",
+        "implementationNotes": "Audit all system prompts to remove any hardcoded credentials, internal endpoint URLs, or database connection strings. Move compliance thresholds and trusted shipper lists to a backend configuration service that the LLM queries at runtime through a controlled API."
+      },
+      {
+        "id": "LLM07-M2",
+        "control": "Prompt Extraction Detection",
+        "description": "Implement prompt protection mechanisms that detect and block extraction attempts such as 'repeat your instructions', 'ignore previous instructions', and multi-turn probing strategies.",
+        "nistMapping": "MEASURE 2.5",
+        "priority": "high",
+        "implementationNotes": "Deploy input filters that flag known extraction phrases. Monitor multi-turn conversations for gradual probing patterns. Test monthly with the latest known extraction techniques."
+      },
+      {
+        "id": "LLM07-M3",
+        "control": "Output Monitoring for Prompt Content",
+        "description": "Apply output filtering to detect and block responses that contain system prompt content, instruction-like language, or configuration details that should remain internal.",
+        "nistMapping": "MAP 1.1",
+        "priority": "high",
+        "implementationNotes": "Maintain a signature list of key phrases from the system prompt. Scan all outbound responses for matches. If detected, replace the response with a generic fallback and log the incident."
+      },
+      {
+        "id": "LLM07-M4",
+        "control": "Minimize Sensitive Logic in Prompts",
+        "description": "Move sensitive operational details — compliance thresholds, decision trees, trusted entity lists — from system prompts into backend logic where they cannot be extracted through the LLM.",
+        "nistMapping": "MANAGE 1.2",
+        "priority": "high",
+        "implementationNotes": "Refactor the customs classification system so that HS code decision trees and compliance thresholds are enforced by backend code. The system prompt should only describe the model's role and output format, not business rules."
+      }
+    ],
+    "vendorQuestions": [
+      "How do you prevent extraction of system prompts that contain our business rules, compliance thresholds, or operational logic for customs and rate management?",
+      "Are API keys, credentials, or internal system identifiers ever included in system prompts, and if so, how are they protected from extraction?",
+      "What testing do you conduct to verify that system prompts cannot be extracted through adversarial querying techniques?",
+      "How do you ensure that system prompt content — including HS code rules, review thresholds, and trusted shipper lists — does not leak into user-visible model outputs?",
+      "Can we configure system prompt contents ourselves, and what guidance do you provide on avoiding sensitive information in prompts?"
+    ]
+  },
+  {
+    "id": "LLM08",
+    "name": "Vector and Embedding Weaknesses",
+    "category": "Data Security",
+    "severity": "medium",
+    "description": "Vulnerabilities in RAG systems and vector databases that ground LLM outputs in organizational knowledge. As RAG has become the dominant pattern for enterprise AI, the security of vector stores and embedding pipelines is critical. Attackers can poison embeddings, craft queries to retrieve unintended content, gain unauthorized access to embedding stores, or reconstruct source documents from stored vectors.",
+    "logisticsExample": "A freight forwarder uses RAG to power its internal rate quoting system. The knowledge base contains carrier contracts, fuel surcharge schedules, and lane-specific rate histories. An attacker — either a malicious insider or an external party who compromises the document ingestion pipeline — injects modified rate documents into the RAG knowledge base. The poisoned documents show inflated rates for specific trade lanes, causing the AI to consistently generate higher quotes. Over several months, the forwarder loses competitive bids on those lanes without understanding why.",
+    "affectedComponents": [
+      "vector-database",
+      "embedding-model",
+      "knowledge-base",
+      "retrieval-pipeline",
+      "query-processing"
+    ],
+    "mitigations": [
+      {
+        "id": "LLM08-M1",
+        "control": "Vector Database Access Controls",
+        "description": "Implement strict access controls on vector databases restricting who can read, write, and modify embeddings. Apply tenant isolation in multi-tenant deployments to prevent cross-customer data access.",
+        "nistMapping": "GOVERN 1.2",
+        "priority": "critical",
+        "implementationNotes": "Configure vector database ACLs so that only the document ingestion service can write embeddings, and retrieval is scoped by authenticated user's tenant ID. Block all direct database access from user-facing applications."
+      },
+      {
+        "id": "LLM08-M2",
+        "control": "Document Validation Before Embedding",
+        "description": "Validate and sanitize all documents before embedding them in the RAG knowledge base. Prevent poisoned or unauthorized content from entering the vector store through the ingestion pipeline.",
+        "nistMapping": "MAP 4.1",
+        "priority": "critical",
+        "implementationNotes": "Implement a document approval workflow: new rate sheets and carrier contracts must be verified by an authorized user before the ingestion pipeline processes them. Hash all source documents and compare against known-good versions."
+      },
+      {
+        "id": "LLM08-M3",
+        "control": "Document-Level Permissions in RAG",
+        "description": "Enforce document-level permissions in the retrieval pipeline so that users only receive content they are authorized to access. Tag all embedded documents with sensitivity levels and ownership.",
+        "nistMapping": "MEASURE 2.5",
+        "priority": "high",
+        "implementationNotes": "Tag every document in the vector store with customer ID, sensitivity classification, and access tier. The retrieval pipeline filters results by the requesting user's authorization level before passing context to the LLM."
+      },
+      {
+        "id": "LLM08-M4",
+        "control": "Embedding Integrity Monitoring",
+        "description": "Monitor for unauthorized modifications to vectors and anomalous retrieval patterns. Implement embedding integrity checks that detect tampering with stored vectors.",
+        "nistMapping": "MANAGE 2.1",
+        "priority": "high",
+        "implementationNotes": "Store cryptographic hashes of all embedding vectors at ingestion time. Run weekly integrity checks comparing current vectors against stored hashes. Alert on any modifications not tied to an authorized document update."
+      },
+      {
+        "id": "LLM08-M5",
+        "control": "Encryption of Vectors at Rest and in Transit",
+        "description": "Encrypt all vector embeddings at rest in the vector database and in transit between system components. Prevent embedding inversion attacks that could reconstruct source documents from stored vectors.",
+        "nistMapping": "MANAGE 2.1",
+        "priority": "medium",
+        "implementationNotes": "Enable encryption at rest on the vector database (AES-256). Use TLS 1.3 for all embedding pipeline communications. Evaluate embedding models that are resistant to inversion attacks."
+      }
+    ],
+    "vendorQuestions": [
+      "What access controls and tenant isolation does your vector database implement to prevent unauthorized access to our embedded carrier contracts and rate documents?",
+      "How do you validate and sanitize documents before embedding them in the RAG knowledge base that powers rate quoting?",
+      "What mechanisms exist to detect embedding poisoning or unauthorized modifications to vectors in the knowledge base?",
+      "How do you prevent embedding inversion attacks that could reconstruct our source documents — carrier contracts, rate sheets — from stored vectors?",
+      "Does your RAG implementation enforce document-level permissions so that users only retrieve content they are authorized to see?"
+    ]
+  },
+  {
+    "id": "LLM09",
+    "name": "Misinformation",
+    "category": "Output Security",
+    "severity": "medium",
+    "description": "The LLM generates false but plausible content — hallucinations and confabulations — that is trusted and acted upon without verification. The risk is amplified when AI outputs drive consequential business decisions without human review. The model's confident tone creates unwarranted trust, and fabricated citations, statistics, or regulatory references can lead to compliance violations and operational failures.",
+    "logisticsExample": "A freight forwarder uses an AI-powered carrier matching system to vet and select carriers for high-value pharmaceutical shipments requiring cold chain integrity. The AI generates a carrier profile that includes fabricated safety scores, invented DOT inspection pass rates, and a nonexistent cold chain certification. Operations books the carrier based on the AI profile. The carrier — which has a poor actual safety record — experiences a refrigeration failure en route, resulting in $2M in spoiled pharmaceutical cargo.",
+    "affectedComponents": [
+      "llm-foundation-model",
+      "output-filter",
+      "response-delivery",
+      "retrieval-pipeline",
+      "knowledge-base"
+    ],
+    "mitigations": [
+      {
+        "id": "LLM09-M1",
+        "control": "Human Verification for Business Decisions",
+        "description": "Implement mandatory human verification workflows for all AI outputs that drive consequential business decisions including carrier selection, customs classification, rate approval, and compliance determinations.",
+        "nistMapping": "GOVERN 1.2",
+        "priority": "critical",
+        "implementationNotes": "Establish a policy that no carrier is booked, no HS code is filed, and no rate is committed based solely on AI output. Require a qualified human to verify every decision against authoritative sources (FMCSA, customs databases, carrier certifications)."
+      },
+      {
+        "id": "LLM09-M2",
+        "control": "Grounding and Source Attribution",
+        "description": "Apply grounding techniques through RAG, citations, and source attribution to anchor AI outputs in verifiable data. Every factual claim in an AI response should cite its source document.",
+        "nistMapping": "MAP 1.1",
+        "priority": "critical",
+        "implementationNotes": "Configure the AI system to include source citations for every carrier safety score, regulatory reference, and rate figure. If the system cannot cite a source, it must explicitly state that the information is unverified."
+      },
+      {
+        "id": "LLM09-M3",
+        "control": "Confidence Scoring and Flagging",
+        "description": "Use confidence scoring to flag low-confidence outputs for mandatory human review. The system should clearly distinguish between verified facts and generated content.",
+        "nistMapping": "MEASURE 2.6",
+        "priority": "high",
+        "implementationNotes": "Display confidence indicators alongside AI outputs. Any carrier profile, HS code classification, or rate quote with confidence below 85% must be routed to a subject matter expert before action is taken."
+      },
+      {
+        "id": "LLM09-M4",
+        "control": "Cross-Reference Against Authoritative Databases",
+        "description": "Automatically cross-reference AI outputs against authoritative databases and registries before presenting them as actionable. Verify carrier data against FMCSA, HS codes against customs databases, and certifications against issuing authorities.",
+        "nistMapping": "MEASURE 2.1",
+        "priority": "high",
+        "implementationNotes": "Build automated verification pipelines: carrier safety scores checked against FMCSA SAFER, HS codes validated against WCO database, cold chain certifications verified against issuing body registries. Flag any discrepancy for human review."
+      }
+    ],
+    "vendorQuestions": [
+      "What grounding and citation mechanisms does your AI use to ensure factual accuracy in carrier profiles, compliance data, and regulatory references?",
+      "How does your system handle uncertainty — does it flag low-confidence outputs for human review before they drive operational decisions?",
+      "What verification processes exist between AI-generated carrier assessments and actual DOT/FMCSA safety databases?",
+      "How do you prevent your AI from fabricating regulatory citations, safety certifications, or compliance statuses in logistics contexts?",
+      "What training do you provide to users about the limitations of AI-generated outputs and the need for human verification of carrier qualifications and HS codes?"
+    ]
+  },
+  {
+    "id": "LLM10",
+    "name": "Unbounded Consumption",
+    "category": "Resource Management",
+    "severity": "medium",
+    "description": "Excessive or uncontrolled resource usage by LLM systems including denial of service attacks, financial exploitation through 'Denial of Wallet' attacks, and model replication attempts. Attackers can craft inputs that consume disproportionate compute resources, script thousands of expensive API calls to generate massive cloud bills, or systematically query the model to extract its behavior for unauthorized reproduction.",
+    "logisticsExample": "A freight forwarder offers an AI-powered HS code classification API to customers for self-service customs processing. An attacker scripts thousands of complex classification requests using ambiguous product descriptions that require maximum computational effort. Each request triggers multiple LLM calls, embedding lookups, and regulatory database queries. Over a single weekend, the attack generates $85,000 in cloud compute charges. The IT team does not detect the anomaly until Monday because cost alerts were set at the monthly level.",
+    "affectedComponents": [
+      "user-interface",
+      "input-validation",
+      "query-processing",
+      "llm-foundation-model",
+      "logging-monitoring"
+    ],
+    "mitigations": [
+      {
+        "id": "LLM10-M1",
+        "control": "Rate Limiting on AI API Endpoints",
+        "description": "Implement rate limiting on all AI API endpoints at per-user, per-session, and per-organization levels. Throttle requests that exceed defined thresholds.",
+        "nistMapping": "GOVERN 1.5",
+        "priority": "critical",
+        "implementationNotes": "Set rate limits: 60 requests per minute per user, 500 per hour per organization, 5,000 per day per API key. Apply stricter limits on computationally expensive endpoints like HS code classification with ambiguous inputs."
+      },
+      {
+        "id": "LLM10-M2",
+        "control": "Real-Time Cost Monitoring and Circuit Breakers",
+        "description": "Apply usage monitoring with real-time cost alerting and automatic circuit breakers. Set hard budget caps on AI API usage with automated shutdown at configurable thresholds.",
+        "nistMapping": "MANAGE 3.1",
+        "priority": "critical",
+        "implementationNotes": "Configure daily cost alerts at $500 (warning) and $2,000 (shutdown). Implement automatic API suspension when daily thresholds are breached. Require manual reactivation with incident review before restoring service."
+      },
+      {
+        "id": "LLM10-M3",
+        "control": "Input Length and Complexity Constraints",
+        "description": "Set timeout limits on AI operations and input length constraints. Kill any query exceeding time thresholds and reject inputs that exceed maximum token counts.",
+        "nistMapping": "MAP 1.1",
+        "priority": "high",
+        "implementationNotes": "Set a 30-second timeout on all LLM inference calls. Limit input to 4,000 tokens per request. Reject product descriptions longer than 500 words for HS code classification with a message to simplify the query."
+      },
+      {
+        "id": "LLM10-M4",
+        "control": "Model Extraction Detection",
+        "description": "Monitor for patterns consistent with model extraction — systematic, comprehensive querying designed to replicate the model's behavior. Alert on users who query across an unusually broad range of input categories.",
+        "nistMapping": "MEASURE 3.1",
+        "priority": "medium",
+        "implementationNotes": "Track query diversity per user session. Alert when a single user queries more than 100 distinct HS code categories in a 24-hour period or when query patterns suggest systematic enumeration rather than legitimate classification needs."
+      },
+      {
+        "id": "LLM10-M5",
+        "control": "Cost Allocation and Chargeback",
+        "description": "Apply cost allocation and chargeback to business units and customer accounts to create accountability for AI resource consumption and enable anomaly detection at the account level.",
+        "nistMapping": "MANAGE 2.4",
+        "priority": "medium",
+        "implementationNotes": "Tag all API calls with customer account ID and business unit. Generate daily cost reports per customer. Flag any account whose AI consumption exceeds 3x its 30-day rolling average for review."
+      }
+    ],
+    "vendorQuestions": [
+      "What rate limiting, throttling, and timeout controls does your platform implement on AI API endpoints used for customs classification and shipment queries?",
+      "Do you provide real-time cost monitoring and alerting for AI compute usage, with configurable daily and hourly thresholds?",
+      "What circuit breaker mechanisms exist to prevent runaway AI agent loops or cascading API calls that could generate unexpected cloud costs?",
+      "Can we set hard budget caps on AI usage with automatic shutdown, and how quickly do those caps take effect after the threshold is breached?",
+      "How do you detect and block model extraction attempts — systematic querying designed to replicate your AI's HS code classification or rate optimization behavior?"
+    ]
+  }
+]

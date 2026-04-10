@@ -1,0 +1,522 @@
+{
+  "id": "document-extraction",
+  "name": "Document Classification & Extraction",
+  "category": "interpretive",
+  "description": "AI pipeline that ingests unstructured documents (PDFs, images, emails), classifies them by type, extracts structured fields using OCR and NLP, validates extracted data, and routes results to downstream systems.",
+  "logisticsContext": "Document extraction is critical for processing bills of lading, commercial invoices, customs declarations, packing lists, certificates of origin, and carrier rate sheets. Errors in extraction directly impact customs clearance, billing accuracy, and compliance.",
+  "solutions": [
+    "Invoice Extraction Bot",
+    "BOL Parser",
+    "Customs Declaration Processor",
+    "Email Classification Engine",
+    "Rate Sheet Digitizer",
+    "HS Code Classifier",
+    "Packing List Extractor",
+    "Certificate of Origin Reader",
+    "Freight Invoice Auditor",
+    "POD Document Scanner",
+    "Carrier Contract Digitizer",
+    "Customs Entry Automation",
+    "Shipping Label OCR",
+    "Trade Document Validator",
+    "AP Invoice Processor",
+    "Delivery Receipt Parser"
+  ],
+  "nodes": [
+    {
+      "id": "document-intake",
+      "type": "external",
+      "label": "Document Intake",
+      "description": "Entry point for all inbound documents. Receives files via email gateway (SMTP/IMAP), REST API upload, SFTP drop folder, scanner feed, and EDI interchange. Handles PDFs, TIFF scans, JPEG photos, MSG/EML email files, and XML/EDI messages. This is the primary attack surface \u00e2\u20ac\u201d every document is untrusted content from external parties including carriers, customs brokers, shippers, and vendors.",
+      "position": {
+        "x": 720,
+        "y": 135
+      },
+      "dataFlows": [
+        "raw documents",
+        "email attachments",
+        "scanned images",
+        "API uploads",
+        "EDI messages"
+      ],
+      "trustLevel": "untrusted",
+      "vulnerabilities": [
+        "Malicious file uploads containing embedded scripts, macros, or exploit payloads disguised as legitimate trade documents",
+        "Email-borne prompt injection via crafted invoice subjects or body text designed to manipulate downstream AI classification",
+        "File format exploits targeting OCR or PDF parsing libraries through malformed document structures",
+        "Denial of service through submission of extremely large files or high-volume batch uploads that exhaust processing capacity",
+        "Spoofed sender identity submitting fraudulent documents that appear to originate from trusted trading partners"
+      ]
+    },
+    {
+      "id": "pre-processor",
+      "type": "component",
+      "label": "Pre-processor",
+      "description": "Performs initial document conditioning before AI processing. Runs OCR (Tesseract, Azure Document Intelligence, Google Document AI) on scanned images, normalizes image orientation and resolution, extracts raw text from PDFs, strips metadata, converts file formats to standardized representations, and performs malware scanning. Outputs clean text and normalized images for downstream classification.",
+      "position": {
+        "x": 720,
+        "y": 322
+      },
+      "dataFlows": [
+        "extracted text",
+        "normalized images",
+        "OCR confidence scores",
+        "file metadata"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "OCR manipulation through adversarial font rendering or invisible text layers that produce incorrect extraction results",
+        "Buffer overflow or code execution vulnerabilities in image processing libraries (ImageMagick, Pillow, Poppler) when parsing malformed files",
+        "Unicode homoglyph attacks where visually similar characters produce incorrect field values after OCR extraction",
+        "Steganographic payloads hidden in document images that pass malware scanning but influence downstream model behavior"
+      ]
+    },
+    {
+      "id": "document-classifier",
+      "type": "component",
+      "label": "Document Classifier",
+      "description": "Orchestrates the document classification workflow. Receives pre-processed text and image features, invokes the ML classification model, applies business rules and confidence thresholds, and routes documents to the appropriate extraction template. Determines whether a document is a bill of lading, commercial invoice, customs declaration, packing list, certificate of origin, rate sheet, or other document type.",
+      "position": {
+        "x": 400,
+        "y": 510
+      },
+      "dataFlows": [
+        "document type labels",
+        "classification confidence scores",
+        "routing decisions"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Misclassification causing documents to be routed to wrong extraction templates, producing garbage field values",
+        "Adversarial documents crafted to be classified as a different type to bypass validation rules specific to the true document type",
+        "Confidence threshold manipulation where borderline documents are systematically steered toward less-scrutinized document categories"
+      ]
+    },
+    {
+      "id": "classification-model",
+      "type": "model",
+      "label": "ML Classification Model",
+      "description": "Trained machine learning model (fine-tuned transformer, CNN, or multimodal model) that classifies documents by type based on textual content, layout features, and visual patterns. Trained on labeled corpus of logistics documents. Returns document type prediction with confidence score. May be a cloud-hosted model (Azure AI, AWS Textract) or self-hosted.",
+      "position": {
+        "x": 400,
+        "y": 322
+      },
+      "dataFlows": [
+        "classification predictions",
+        "confidence scores",
+        "feature activations"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Training data poisoning where mislabeled documents in the training set cause systematic misclassification of specific document types",
+        "Model supply chain compromise if pre-trained weights are sourced from untrusted repositories or third-party vendors",
+        "Adversarial evasion attacks using subtle visual or textual perturbations to cause targeted misclassification",
+        "Model drift as document formats evolve over time, degrading classification accuracy without triggering explicit errors"
+      ]
+    },
+    {
+      "id": "field-extractor",
+      "type": "component",
+      "label": "Field Extractor",
+      "description": "Applies document-type-specific extraction logic to pull structured fields from unstructured text. Uses a combination of NLP named entity recognition, regex patterns, layout-aware parsing, and template matching. Extracts fields like shipper name, consignee, PO number, line items, weights, HS codes, invoice totals, vessel names, and port codes. Calls the extraction model for complex or ambiguous fields.",
+      "position": {
+        "x": 880,
+        "y": 622
+      },
+      "dataFlows": [
+        "extracted field values",
+        "field confidence scores",
+        "extraction templates",
+        "entity spans"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Regex injection or catastrophic backtracking from crafted field values that cause extraction timeouts or denial of service",
+        "Field value manipulation through carefully positioned text that causes the extractor to merge or split fields incorrectly",
+        "Template mismatch when document layouts deviate from trained patterns, producing silent extraction errors rather than failures",
+        "Cross-field contamination where data from one field bleeds into adjacent fields due to ambiguous document formatting"
+      ]
+    },
+    {
+      "id": "extraction-model",
+      "type": "model",
+      "label": "Extraction Model",
+      "description": "Fine-tuned LLM or specialized extraction model (LayoutLM, Donut, Azure Form Recognizer custom model) that handles complex extraction tasks the rule-based extractor cannot resolve. Processes ambiguous fields, multi-line addresses, varied date formats, and free-text descriptions. Returns structured key-value pairs with confidence scores for each extracted field.",
+      "position": {
+        "x": 1200,
+        "y": 510
+      },
+      "dataFlows": [
+        "structured field extractions",
+        "confidence scores",
+        "model reasoning traces"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Indirect prompt injection via document content that instructs the extraction LLM to fabricate or alter field values",
+        "Hallucinated field values where the model generates plausible but incorrect data for low-confidence extractions",
+        "Sensitive data leakage if the model memorizes and reproduces PII or financial data from its training corpus across different customer documents",
+        "Adversarial formatting designed to exploit the model's layout understanding, causing it to extract values from the wrong document regions"
+      ]
+    },
+    {
+      "id": "validation-engine",
+      "type": "component",
+      "label": "Validation Engine",
+      "description": "Cross-references extracted data against master data and business rules to verify accuracy. Validates HS codes against tariff schedules, checks shipper/consignee names against customer records, verifies port codes exist, confirms invoice math (line items sum to total), validates date formats and ranges, and flags anomalies like unusual weights or undeclared hazmat. Assigns an overall confidence score to each extraction.",
+      "position": {
+        "x": 880,
+        "y": 810
+      },
+      "dataFlows": [
+        "validation results",
+        "anomaly flags",
+        "corrected field values",
+        "confidence adjustments"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Validation bypass through extracted values that technically pass all rules but are semantically incorrect (valid HS code for wrong product)",
+        "Master data staleness causing valid current data to be flagged as errors when reference tables are outdated",
+        "Rule explosion complexity creating gaps where specific field combinations are never validated together",
+        "Time-of-check/time-of-use gaps where data passes validation but is modified before reaching downstream systems"
+      ]
+    },
+    {
+      "id": "master-data-store",
+      "type": "datastore",
+      "label": "Master Data Store",
+      "description": "Authoritative reference database containing customer records, vendor registries, HS code tariff schedules, port code directories, carrier SCAC codes, country lists, currency tables, and compliance screening lists (denied parties, sanctions). Used by the validation engine to verify extracted data. Synchronized with ERP and TMS master data.",
+      "position": {
+        "x": 1360,
+        "y": 810
+      },
+      "dataFlows": [
+        "customer records",
+        "HS code lookups",
+        "tariff schedules",
+        "port code validations",
+        "compliance screening results"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Data poisoning if master records are corrupted, causing the validation engine to approve incorrect extractions as valid",
+        "Stale reference data where outdated HS codes or tariff schedules allow non-compliant classifications to pass validation",
+        "Unauthorized access to sensitive customer records, contracted rates, or compliance screening results through the validation API",
+        "Synchronization failures between master data and ERP/TMS creating windows where validation uses outdated reference data"
+      ]
+    },
+    {
+      "id": "human-review-queue",
+      "type": "component",
+      "label": "Human Review Queue",
+      "description": "Workflow interface where low-confidence extractions, validation failures, and anomalous documents are routed for manual review. Presents extracted fields alongside the original document image, highlights uncertain values, and allows reviewers to correct, approve, or reject extractions. Reviewer corrections feed back into model training data for continuous improvement.",
+      "position": {
+        "x": 400,
+        "y": 885
+      },
+      "dataFlows": [
+        "review assignments",
+        "corrected extractions",
+        "rejection notices",
+        "training feedback data"
+      ],
+      "trustLevel": "semi-trusted",
+      "vulnerabilities": [
+        "Social engineering attacks where document content is crafted to mislead human reviewers into approving incorrect extractions",
+        "Reviewer fatigue causing rubber-stamp approvals of incorrect extractions during high-volume processing periods",
+        "Feedback loop poisoning where deliberately incorrect reviewer corrections degrade model accuracy over retraining cycles",
+        "Privilege escalation if review queue credentials allow direct modification of validated data bypassing the validation engine"
+      ]
+    },
+    {
+      "id": "output-router",
+      "type": "component",
+      "label": "Output Router",
+      "description": "Routes validated and approved extraction results to the appropriate downstream systems based on document type and business rules. Transforms extracted data into system-specific formats (EDI 315, JSON, XML, CSV) and delivers via API calls, message queues, or file drops. Handles retry logic, delivery confirmation, and error routing for failed deliveries.",
+      "position": {
+        "x": 880,
+        "y": 1035
+      },
+      "dataFlows": [
+        "formatted output payloads",
+        "routing decisions",
+        "delivery confirmations",
+        "error notifications"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Output injection where extracted field values containing special characters or format strings corrupt downstream system payloads",
+        "Routing misconfiguration sending sensitive documents to wrong downstream systems or unauthorized recipients",
+        "Message queue poisoning if malformed output payloads cause downstream consumers to crash or enter error states",
+        "Replay attacks where previously processed documents are resubmitted and re-routed, creating duplicate transactions"
+      ]
+    },
+    {
+      "id": "downstream-systems",
+      "type": "external",
+      "label": "Downstream Systems",
+      "description": "External systems that consume validated extraction results. Includes Transportation Management Systems (TMS) for shipment booking, Enterprise Resource Planning (ERP) for financial posting, customs filing systems (ACE, CARM) for regulatory compliance, billing systems for invoice reconciliation, and data warehouses for analytics. Each system has its own data format and validation requirements.",
+      "position": {
+        "x": 1360,
+        "y": 1110
+      },
+      "dataFlows": [
+        "shipment records",
+        "customs filings",
+        "invoice postings",
+        "billing entries",
+        "analytics data"
+      ],
+      "trustLevel": "untrusted",
+      "vulnerabilities": [
+        "Downstream system compromise allowing attackers to inject false acknowledgments that mark fraudulent extractions as successfully processed",
+        "Data format inconsistencies between extraction output and downstream expectations causing silent data truncation or corruption",
+        "Cascading failures where downstream system outages cause backpressure and data loss in the extraction pipeline",
+        "Unauthorized access to extraction results through compromised downstream system credentials"
+      ]
+    },
+    {
+      "id": "audit-trail",
+      "type": "datastore",
+      "label": "Audit Trail",
+      "description": "Immutable record of the complete document processing lifecycle. Stores document lineage (original file, all transformations), classification decisions with confidence scores, extracted field values with per-field confidence, validation results, human review actions with reviewer identity, output routing records, and delivery confirmations. Provides full traceability for compliance audits, dispute resolution, and model performance monitoring.",
+      "position": {
+        "x": 240,
+        "y": 1110
+      },
+      "dataFlows": [
+        "processing events",
+        "classification logs",
+        "extraction records",
+        "validation results",
+        "review decisions",
+        "delivery receipts"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Log tampering if audit records lack cryptographic integrity protection, allowing post-hoc modification of processing history",
+        "Sensitive data exposure through audit logs containing full extracted PII, financial data, or trade compliance information without redaction",
+        "Insufficient retention causing loss of audit trail before regulatory retention periods expire (customs records require 5+ years)",
+        "Log injection attacks where crafted document content embeds malicious payloads that execute when audit logs are rendered in dashboards"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "intake-to-preprocessor",
+      "source": "document-intake",
+      "target": "pre-processor",
+      "label": "Raw documents for OCR and normalization",
+      "dataType": "raw document",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "preprocessor-to-classifier",
+      "source": "pre-processor",
+      "target": "document-classifier",
+      "label": "Extracted text and normalized images",
+      "dataType": "processed document",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "preprocessor-to-classification-model",
+      "source": "pre-processor",
+      "target": "classification-model",
+      "label": "Feature vectors for classification",
+      "dataType": "processed document",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "classification-model-to-classifier",
+      "source": "classification-model",
+      "target": "document-classifier",
+      "label": "Document type prediction with confidence",
+      "dataType": "model response",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "classifier-to-field-extractor",
+      "source": "document-classifier",
+      "target": "field-extractor",
+      "label": "Classified document with extraction template",
+      "dataType": "processed document",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "field-extractor-to-extraction-model",
+      "source": "field-extractor",
+      "target": "extraction-model",
+      "label": "Ambiguous fields for model extraction",
+      "dataType": "processed document",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "extraction-model-to-field-extractor",
+      "source": "extraction-model",
+      "target": "field-extractor",
+      "label": "Structured field extractions with confidence",
+      "dataType": "model response",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "field-extractor-to-validation",
+      "source": "field-extractor",
+      "target": "validation-engine",
+      "label": "Extracted fields for validation",
+      "dataType": "extracted data",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "master-data-to-validation",
+      "source": "master-data-store",
+      "target": "validation-engine",
+      "label": "Reference data for field verification",
+      "dataType": "reference data",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "validation-to-human-review",
+      "source": "validation-engine",
+      "target": "human-review-queue",
+      "label": "Low-confidence extractions for manual review",
+      "dataType": "extracted data",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "human-review-to-validation",
+      "source": "human-review-queue",
+      "target": "validation-engine",
+      "label": "Corrected and approved extractions",
+      "dataType": "extracted data",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "validation-to-output-router",
+      "source": "validation-engine",
+      "target": "output-router",
+      "label": "Validated extraction results",
+      "dataType": "extracted data",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "output-router-to-downstream",
+      "source": "output-router",
+      "target": "downstream-systems",
+      "label": "Formatted payloads for TMS, ERP, customs",
+      "dataType": "API call",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "intake-to-audit",
+      "source": "document-intake",
+      "target": "audit-trail",
+      "label": "Document receipt and ingestion records",
+      "dataType": "audit event",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "classifier-to-audit",
+      "source": "document-classifier",
+      "target": "audit-trail",
+      "label": "Classification decisions and confidence scores",
+      "dataType": "audit event",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "field-extractor-to-audit",
+      "source": "field-extractor",
+      "target": "audit-trail",
+      "label": "Extraction results with per-field confidence",
+      "dataType": "audit event",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "validation-to-audit",
+      "source": "validation-engine",
+      "target": "audit-trail",
+      "label": "Validation results and anomaly flags",
+      "dataType": "audit event",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "human-review-to-audit",
+      "source": "human-review-queue",
+      "target": "audit-trail",
+      "label": "Review actions with reviewer identity",
+      "dataType": "audit event",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "output-router-to-audit",
+      "source": "output-router",
+      "target": "audit-trail",
+      "label": "Routing decisions and delivery confirmations",
+      "dataType": "audit event",
+      "encrypted": true,
+      "validated": true
+    }
+  ],
+  "trustBoundaries": [
+    {
+      "id": "external-intake-boundary",
+      "label": "External Intake Boundary",
+      "nodeIds": [
+        "document-intake"
+      ],
+      "boundaryType": "network"
+    },
+    {
+      "id": "model-boundary",
+      "label": "Model Privilege Boundary",
+      "nodeIds": [
+        "classification-model",
+        "extraction-model"
+      ],
+      "boundaryType": "privilege"
+    },
+    {
+      "id": "data-classification-boundary",
+      "label": "Data Classification Boundary",
+      "nodeIds": [
+        "master-data-store",
+        "audit-trail"
+      ],
+      "boundaryType": "data-classification"
+    },
+    {
+      "id": "output-boundary",
+      "label": "Output Network Boundary",
+      "nodeIds": [
+        "output-router",
+        "downstream-systems"
+      ],
+      "boundaryType": "network"
+    }
+  ],
+  "applicableThreats": [
+    "LLM01",
+    "LLM02",
+    "LLM04",
+    "LLM05",
+    "LLM09"
+  ]
+}

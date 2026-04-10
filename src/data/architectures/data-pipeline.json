@@ -1,0 +1,534 @@
+{
+  "id": "data-pipeline",
+  "name": "Data Lake & Analytics Pipeline",
+  "category": "descriptive",
+  "description": "Analytics pipeline that ingests data from multiple operational systems, transforms and enriches it using AI/ML models, stores it in a data lake/warehouse, and serves insights through dashboards, reports, and APIs. AI enhances traditional BI with anomaly detection, natural language querying, and automated insight generation.",
+  "logisticsContext": "Analytics pipelines aggregate shipment data, financial metrics, carrier performance, customer behavior, and market trends. AI-enhanced analytics detect anomalies in billing, identify operational inefficiencies, and generate natural language summaries for executive reporting.",
+  "solutions": [
+    "Executive Dashboard",
+    "Carrier Scorecard",
+    "Financial Analytics",
+    "Operational KPI Tracker",
+    "Anomaly Detection System",
+    "NL Query Interface",
+    "Automated Report Generator",
+    "Market Intelligence Dashboard",
+    "Customer Analytics Platform"
+  ],
+  "nodes": [
+    {
+      "id": "source-systems",
+      "type": "external",
+      "label": "Source Systems",
+      "description": "Upstream operational systems that feed raw data into the analytics pipeline. Includes Transportation Management Systems (TMS), Enterprise Resource Planning (ERP), Customer Relationship Management (CRM), carrier API feeds, market data providers, and IoT sensor streams. Data arrives in varied formats (JSON, CSV, EDI, XML) with inconsistent schemas and quality levels.",
+      "position": {
+        "x": 160,
+        "y": 435
+      },
+      "dataFlows": [
+        "shipment records",
+        "financial transactions",
+        "customer data",
+        "carrier rates",
+        "market feeds",
+        "IoT telemetry"
+      ],
+      "trustLevel": "untrusted",
+      "vulnerabilities": [
+        "Compromised source system pushing poisoned data that propagates through the entire pipeline undetected",
+        "Schema changes in upstream APIs breaking ingestion without alerting downstream consumers",
+        "Carrier API feeds injecting manipulated rate data to influence analytics-driven pricing decisions",
+        "Sensitive PII or financial data transmitted without encryption from legacy source systems"
+      ]
+    },
+    {
+      "id": "ingestion-layer",
+      "type": "component",
+      "label": "Ingestion Layer",
+      "description": "Batch and streaming ETL connectors that extract data from source systems, perform initial validation, and land raw records into the data lake. Handles Change Data Capture (CDC) for real-time updates, API polling for external feeds, file-based imports for legacy systems, and event stream consumption from message brokers (Kafka, EventBridge).",
+      "position": {
+        "x": 480,
+        "y": 435
+      },
+      "dataFlows": [
+        "raw ingested records",
+        "CDC change events",
+        "API responses",
+        "file uploads",
+        "ingestion metadata"
+      ],
+      "trustLevel": "semi-trusted",
+      "vulnerabilities": [
+        "SQL injection or command injection through malformed source data that exploits ingestion parsing logic",
+        "Credential exposure if API keys for source system connections are stored in plaintext configuration",
+        "Denial of service from sudden volume spikes in streaming sources exhausting ingestion compute capacity",
+        "Silent data loss when ingestion jobs fail without proper dead-letter queue handling or alerting"
+      ]
+    },
+    {
+      "id": "data-lake",
+      "type": "datastore",
+      "label": "Data Lake (Raw Storage)",
+      "description": "Centralized raw data repository storing ingested data in its original format before transformation. Typically implemented on cloud object storage (S3, Azure Data Lake Storage, GCS) with partitioned directory structures organized by source, date, and data domain. Serves as the immutable source-of-truth layer for audit and reprocessing.",
+      "position": {
+        "x": 800,
+        "y": 285
+      },
+      "dataFlows": [
+        "raw data files",
+        "partitioned datasets",
+        "schema registries",
+        "data lineage metadata"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Overly permissive bucket or container policies exposing sensitive raw data to unauthorized internal users",
+        "Lack of encryption at rest for data containing PII, financial records, or contracted carrier rates",
+        "Data retention policy violations storing regulated data beyond legally mandated periods",
+        "Cross-account access misconfiguration allowing external parties to read or write to raw storage"
+      ]
+    },
+    {
+      "id": "transformation-layer",
+      "type": "component",
+      "label": "Transformation Layer",
+      "description": "Data processing engine that cleans, normalizes, deduplicates, and enriches raw data into analytics-ready datasets. Implements business logic using dbt models, Apache Spark jobs, or SQL-based transformations. Handles schema evolution, data type casting, currency conversion, timezone normalization, and entity resolution across disparate source systems.",
+      "position": {
+        "x": 800,
+        "y": 660
+      },
+      "dataFlows": [
+        "cleaned datasets",
+        "transformed tables",
+        "enrichment lookups",
+        "data quality metrics"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Logic errors in transformation code silently producing incorrect aggregations that inform bad business decisions",
+        "Unauthorized modification of dbt models or Spark jobs altering how financial or operational metrics are calculated",
+        "Resource exhaustion from poorly optimized transformation queries consuming excessive compute and blocking pipelines",
+        "Supply chain risk in third-party transformation packages (dbt packages, Spark libraries) introducing vulnerabilities"
+      ]
+    },
+    {
+      "id": "ai-ml-enrichment",
+      "type": "model",
+      "label": "AI/ML Enrichment",
+      "description": "Machine learning models that augment transformed data with AI-generated insights. Runs anomaly detection on financial transactions and operational metrics, classifies shipment delays by root cause, performs NLP-based entity extraction from unstructured carrier communications, and generates predictive features for downstream consumption. Models are trained on historical pipeline data and deployed as batch or near-real-time inference jobs.",
+      "position": {
+        "x": 1120,
+        "y": 510
+      },
+      "dataFlows": [
+        "anomaly scores",
+        "classification labels",
+        "extracted entities",
+        "predictive features",
+        "confidence scores"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Training data poisoning if historical pipeline data contains adversarial records that bias model outputs",
+        "Model drift causing anomaly detection to miss genuine anomalies or flag excessive false positives over time",
+        "Overreliance on AI-generated labels without human review leading to incorrect classifications in reports",
+        "Supply chain compromise of pre-trained NLP models downloaded from public model registries",
+        "Inference pipeline failures silently falling back to stale enrichment data without notification"
+      ]
+    },
+    {
+      "id": "data-warehouse",
+      "type": "datastore",
+      "label": "Data Warehouse",
+      "description": "Structured analytical data store optimized for complex queries and aggregations. Implements star or snowflake schemas with fact and dimension tables for shipment volumes, revenue, carrier performance, customer metrics, and operational KPIs. Typically Snowflake, BigQuery, Redshift, or Synapse. Serves as the primary query target for BI tools and the NL query interface.",
+      "position": {
+        "x": 1440,
+        "y": 360
+      },
+      "dataFlows": [
+        "analytical tables",
+        "materialized views",
+        "query results",
+        "aggregated metrics"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Excessive warehouse privileges allowing analysts to query tables containing sensitive financial or PII data",
+        "Query injection through dynamically constructed SQL in downstream tools bypassing parameterized query patterns",
+        "Cost explosion from uncontrolled ad-hoc queries or poorly written joins consuming massive compute credits",
+        "Stale materialized views serving outdated metrics when refresh jobs fail silently"
+      ]
+    },
+    {
+      "id": "semantic-layer",
+      "type": "component",
+      "label": "Semantic Layer",
+      "description": "Business logic abstraction layer that defines canonical metric definitions, dimension hierarchies, and a governed data catalog. Ensures that 'revenue,' 'on-time delivery rate,' and 'carrier score' mean the same thing regardless of which dashboard, report, or query tool accesses the data. Implemented via tools like dbt Semantic Layer, AtScale, or Cube. Provides the ontology that the NL query interface uses to translate natural language into accurate SQL.",
+      "position": {
+        "x": 1440,
+        "y": 660
+      },
+      "dataFlows": [
+        "metric definitions",
+        "dimension hierarchies",
+        "data catalog entries",
+        "semantic mappings"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Inconsistent metric definitions causing conflicting numbers across dashboards and eroding stakeholder trust",
+        "Unauthorized edits to semantic definitions silently changing how KPIs are calculated organization-wide",
+        "Incomplete catalog coverage leaving ungoverned tables accessible via direct warehouse queries",
+        "Ambiguous dimension hierarchies causing the NL query interface to generate incorrect SQL joins"
+      ]
+    },
+    {
+      "id": "bi-dashboard-layer",
+      "type": "component",
+      "label": "BI / Dashboard Layer",
+      "description": "Visualization and reporting front-end that presents analytics to business users through interactive dashboards and charts. Tools like Tableau, Power BI, Looker, or custom web dashboards. Renders executive summaries, carrier scorecards, financial drill-downs, and operational monitors. Users interact with filters, date ranges, and drill-through paths to explore data.",
+      "position": {
+        "x": 1840,
+        "y": 210
+      },
+      "dataFlows": [
+        "dashboard views",
+        "chart data",
+        "filter parameters",
+        "exported reports"
+      ],
+      "trustLevel": "semi-trusted",
+      "vulnerabilities": [
+        "Embedded credentials in published dashboards exposing warehouse connection strings to end users",
+        "Dashboard URL manipulation allowing users to access views outside their authorized data scope",
+        "Cross-site scripting through unsanitized filter values or custom dashboard parameters",
+        "Screenshot or PDF export of dashboards leaking sensitive data outside governed access controls"
+      ]
+    },
+    {
+      "id": "nl-query-interface",
+      "type": "component",
+      "label": "NL Query Interface",
+      "description": "Natural language to SQL translation layer that allows non-technical users to ask business questions in plain English and receive data-driven answers. Uses an LLM to interpret user intent, maps questions to semantic layer definitions, generates SQL queries against the data warehouse, and formats results as tables or charts. Enables questions like 'What was our on-time delivery rate for Q4 by carrier?' without SQL knowledge.",
+      "position": {
+        "x": 1840,
+        "y": 510
+      },
+      "dataFlows": [
+        "natural language questions",
+        "generated SQL",
+        "query results",
+        "formatted answers"
+      ],
+      "trustLevel": "semi-trusted",
+      "vulnerabilities": [
+        "Prompt injection through crafted natural language queries that cause the LLM to generate malicious SQL or bypass row-level security",
+        "SQL injection via LLM-generated queries that are not properly parameterized before execution against the warehouse",
+        "Information disclosure when the LLM reveals table schemas, column names, or data catalog structure in its responses",
+        "Excessive resource consumption from LLM-generated queries that produce expensive full-table scans or cross-joins",
+        "Hallucinated SQL that appears syntactically valid but semantically joins wrong tables or applies incorrect filters"
+      ]
+    },
+    {
+      "id": "report-generator",
+      "type": "component",
+      "label": "Automated Report Generator",
+      "description": "Scheduled reporting engine that produces and distributes automated business reports \u00e2\u20ac\u201d weekly carrier scorecards, monthly financial summaries, daily operational snapshots, and ad-hoc executive briefings. Uses LLM-generated natural language narratives to summarize key trends, anomalies, and recommendations alongside charts and tables. Distributes via email, Slack, SharePoint, or embedded portal.",
+      "position": {
+        "x": 1840,
+        "y": 810
+      },
+      "dataFlows": [
+        "generated reports",
+        "narrative summaries",
+        "distribution lists",
+        "schedule configurations"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "LLM-generated narratives hallucinating trends or misrepresenting data that executives act on without verification",
+        "Report distribution to incorrect recipients exposing sensitive financial or operational data",
+        "Template injection in report generation allowing attackers to embed malicious content in distributed documents",
+        "Stale data in scheduled reports when upstream pipeline delays are not reflected in report timestamps"
+      ]
+    },
+    {
+      "id": "access-control",
+      "type": "component",
+      "label": "Access Control Layer",
+      "description": "Centralized authorization layer enforcing row-level security, column-level masking, and role-based access across all serving components. Controls which users, teams, and service accounts can access which data domains, cost centers, customer segments, and geographic regions. Integrates with corporate SSO/LDAP, implements attribute-based access control (ABAC), and maintains audit logs of all data access events.",
+      "position": {
+        "x": 1120,
+        "y": 960
+      },
+      "dataFlows": [
+        "access policies",
+        "role assignments",
+        "audit logs",
+        "masking rules",
+        "authentication tokens"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Role explosion creating overly broad access groups that grant users visibility into data outside their business need",
+        "Stale role assignments for departed employees or reorganized teams maintaining access to sensitive pipelines",
+        "Bypass through direct warehouse connections that circumvent the access control layer entirely",
+        "Insufficient column-level masking exposing PII fields in analytical tables to unauthorized analysts"
+      ]
+    },
+    {
+      "id": "data-quality-monitor",
+      "type": "component",
+      "label": "Data Quality Monitor",
+      "description": "Continuous data observability system that monitors pipeline health, data freshness, schema consistency, volume anomalies, and statistical drift across all pipeline stages. Runs automated checks after each transformation step, alerts on SLA breaches, tracks data lineage for impact analysis, and provides a quality scorecard for each data domain. Implements tools like Great Expectations, Monte Carlo, or Soda.",
+      "position": {
+        "x": 800,
+        "y": 960
+      },
+      "dataFlows": [
+        "quality check results",
+        "freshness alerts",
+        "schema change notifications",
+        "drift reports",
+        "lineage graphs"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Alert fatigue from poorly calibrated thresholds causing teams to ignore genuine data quality failures",
+        "Incomplete test coverage leaving critical data domains unmonitored while less important tables are over-tested",
+        "Manipulation of quality check definitions to suppress alerts on intentionally corrupted data",
+        "Lineage gaps failing to trace data quality issues back to their root cause in source systems"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "sources-to-ingestion",
+      "source": "source-systems",
+      "target": "ingestion-layer",
+      "label": "Raw data feeds (API, CDC, file)",
+      "dataType": "raw data",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "ingestion-to-data-lake",
+      "source": "ingestion-layer",
+      "target": "data-lake",
+      "label": "Landed raw records",
+      "dataType": "raw data",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "data-lake-to-transformation",
+      "source": "data-lake",
+      "target": "transformation-layer",
+      "label": "Raw data for cleaning and enrichment",
+      "dataType": "raw data",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "transformation-to-ai-ml",
+      "source": "transformation-layer",
+      "target": "ai-ml-enrichment",
+      "label": "Cleaned datasets for ML inference",
+      "dataType": "processed data",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "ai-ml-to-warehouse",
+      "source": "ai-ml-enrichment",
+      "target": "data-warehouse",
+      "label": "Enriched data with AI-generated features",
+      "dataType": "processed data",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "transformation-to-warehouse",
+      "source": "transformation-layer",
+      "target": "data-warehouse",
+      "label": "Transformed analytics-ready tables",
+      "dataType": "processed data",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "warehouse-to-semantic",
+      "source": "data-warehouse",
+      "target": "semantic-layer",
+      "label": "Table schemas and metric source data",
+      "dataType": "processed data",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "semantic-to-bi",
+      "source": "semantic-layer",
+      "target": "bi-dashboard-layer",
+      "label": "Governed metrics and dimensions",
+      "dataType": "processed data",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "semantic-to-nl-query",
+      "source": "semantic-layer",
+      "target": "nl-query-interface",
+      "label": "Metric definitions and data catalog",
+      "dataType": "processed data",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "warehouse-to-nl-query",
+      "source": "data-warehouse",
+      "target": "nl-query-interface",
+      "label": "SQL query execution and results",
+      "dataType": "query results",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "warehouse-to-report-gen",
+      "source": "data-warehouse",
+      "target": "report-generator",
+      "label": "Aggregated data for scheduled reports",
+      "dataType": "query results",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "ai-ml-to-report-gen",
+      "source": "ai-ml-enrichment",
+      "target": "report-generator",
+      "label": "Anomaly summaries and AI narratives",
+      "dataType": "model response",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "access-control-to-warehouse",
+      "source": "access-control",
+      "target": "data-warehouse",
+      "label": "Row/column security policies",
+      "dataType": "access policy",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "access-control-to-bi",
+      "source": "access-control",
+      "target": "bi-dashboard-layer",
+      "label": "User role and dashboard permissions",
+      "dataType": "access policy",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "access-control-to-nl-query",
+      "source": "access-control",
+      "target": "nl-query-interface",
+      "label": "Query scope restrictions per user role",
+      "dataType": "access policy",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "dq-monitor-to-transformation",
+      "source": "data-quality-monitor",
+      "target": "transformation-layer",
+      "label": "Quality gate pass/fail signals",
+      "dataType": "quality signal",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "dq-monitor-to-ingestion",
+      "source": "data-quality-monitor",
+      "target": "ingestion-layer",
+      "label": "Source data freshness and volume alerts",
+      "dataType": "quality signal",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "ingestion-to-dq-monitor",
+      "source": "ingestion-layer",
+      "target": "data-quality-monitor",
+      "label": "Ingestion job metrics and schema snapshots",
+      "dataType": "telemetry",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "transformation-to-dq-monitor",
+      "source": "transformation-layer",
+      "target": "data-quality-monitor",
+      "label": "Row counts, null rates, distribution stats",
+      "dataType": "telemetry",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "warehouse-to-dq-monitor",
+      "source": "data-warehouse",
+      "target": "data-quality-monitor",
+      "label": "Table freshness and query performance metrics",
+      "dataType": "telemetry",
+      "encrypted": true,
+      "validated": true
+    }
+  ],
+  "trustBoundaries": [
+    {
+      "id": "external-source-boundary",
+      "label": "External Source Boundary",
+      "nodeIds": [
+        "source-systems",
+        "ingestion-layer"
+      ],
+      "boundaryType": "network"
+    },
+    {
+      "id": "data-classification-boundary",
+      "label": "Data Classification Boundary",
+      "nodeIds": [
+        "data-lake",
+        "transformation-layer",
+        "ai-ml-enrichment",
+        "data-warehouse"
+      ],
+      "boundaryType": "data-classification"
+    },
+    {
+      "id": "serving-boundary",
+      "label": "Serving Boundary",
+      "nodeIds": [
+        "bi-dashboard-layer",
+        "nl-query-interface",
+        "report-generator"
+      ],
+      "boundaryType": "network"
+    },
+    {
+      "id": "access-control-boundary",
+      "label": "Access Control Boundary",
+      "nodeIds": [
+        "access-control",
+        "semantic-layer"
+      ],
+      "boundaryType": "auth"
+    }
+  ],
+  "applicableThreats": [
+    "LLM02",
+    "LLM03",
+    "LLM04",
+    "LLM05",
+    "LLM09"
+  ]
+}

@@ -1,26 +1,132 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0F172A;
+  --foreground: #E2E8F0;
+  --surface: #1E293B;
+  --surface-hover: #334155;
+  --border: #334155;
+  --border-subtle: #1E293B;
+  --accent: #3B82F6;
+  --accent-hover: #2563EB;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  --success: #22C55E;
+  --muted: #94A3B8;
+  --trust-trusted: #22C55E;
+  --trust-semi: #F59E0B;
+  --trust-untrusted: #EF4444;
+  --trust-trusted-bg: #052E16;
+  --trust-semi-bg: #422006;
+  --trust-untrusted-bg: #450A0A;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --color-success: var(--success);
+  --color-muted: var(--muted);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+}
+
+/* React Flow overrides for dark theme */
+.react-flow__background {
+  background-color: var(--background) !important;
+}
+
+.react-flow__minimap {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px;
+}
+
+.react-flow__controls {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px;
+}
+
+.react-flow__controls button {
+  background-color: var(--surface) !important;
+  border-color: var(--border) !important;
+  color: var(--foreground) !important;
+  fill: var(--foreground) !important;
+}
+
+.react-flow__controls button:hover {
+  background-color: var(--surface-hover) !important;
+}
+
+/* Node state animations */
+@keyframes pulse-amber {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+  50% { box-shadow: 0 0 14px 5px rgba(245, 158, 11, 0.25); }
+}
+
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 18px 7px rgba(239, 68, 68, 0.3); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+.node-targeted {
+  animation: pulse-amber 2s ease-in-out infinite;
+}
+
+.node-compromised {
+  animation: pulse-red 1s ease-in-out infinite;
+}
+
+.node-defended {
+  box-shadow: 0 0 14px 5px rgba(34, 197, 94, 0.25);
+}
+
+/* Edge attack path animation */
+@keyframes dash-flow {
+  0% { stroke-dashoffset: 24; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.edge--attack-path path {
+  animation: dash-flow 1s linear infinite;
+}
+
+/* Reduced motion — disable all custom animations */
+@media (prefers-reduced-motion: reduce) {
+  .node-targeted,
+  .node-compromised {
+    animation: none;
+  }
+
+  .edge--attack-path path {
+    animation: none;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

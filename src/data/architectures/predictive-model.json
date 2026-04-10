@@ -1,0 +1,530 @@
+{
+  "id": "predictive-model",
+  "name": "Predictive ML Model Pipeline",
+  "category": "predictive",
+  "description": "Machine learning pipeline that ingests historical and real-time data, engineers features, trains/serves predictive models, and delivers forecasts to business systems. Covers the full MLOps lifecycle from data collection through model serving and monitoring.",
+  "logisticsContext": "Predictive models power freight rate forecasting, demand prediction, ETA estimation, fraud detection, and capacity planning. Model accuracy directly impacts revenue (pricing), operations (capacity), and risk management (fraud).",
+  "solutions": [
+    "Smart Pricing Engine",
+    "Demand Forecaster",
+    "ETA Predictor",
+    "Fraud Detection Model",
+    "Capacity Planner",
+    "Carrier Score Model",
+    "Lane Volume Predictor",
+    "Shipment Delay Classifier",
+    "Dynamic Surcharge Calculator",
+    "Churn Risk Model",
+    "Load Tender Acceptance Predictor",
+    "Warehouse Throughput Forecaster",
+    "Fuel Cost Predictor",
+    "Port Congestion Estimator",
+    "Dwell Time Predictor",
+    "Customs Clearance Time Estimator",
+    "Route Optimization Scorer",
+    "Revenue Leakage Detector",
+    "Carrier Capacity Forecaster",
+    "Seasonal Demand Model",
+    "Accessorial Charge Predictor",
+    "Invoice Anomaly Detector"
+  ],
+  "nodes": [
+    {
+      "id": "data-sources",
+      "type": "external",
+      "label": "Data Sources",
+      "description": "External and internal data feeds that supply raw inputs to the ML pipeline. Includes shipment history databases, market rate feeds (DAT, Freightos), carrier performance APIs, weather services, port congestion feeds, fuel price indices, and economic indicators. Data quality and integrity at this layer directly determines model accuracy downstream.",
+      "position": {
+        "x": 160,
+        "y": 285
+      },
+      "dataFlows": [
+        "shipment records",
+        "market rate feeds",
+        "carrier data",
+        "weather forecasts",
+        "fuel indices",
+        "economic indicators"
+      ],
+      "trustLevel": "untrusted",
+      "vulnerabilities": [
+        "Data poisoning through manipulated market feeds or falsified carrier performance metrics designed to skew model predictions",
+        "Supply chain attacks on third-party API providers injecting corrupted data into training pipelines",
+        "Stale or delayed data feeds causing models to train on outdated market conditions without detection",
+        "Adversarial manipulation of publicly available data sources (fuel indices, port statistics) to influence model outputs"
+      ]
+    },
+    {
+      "id": "data-ingestion",
+      "type": "component",
+      "label": "Data Ingestion Layer",
+      "description": "ETL/ELT pipelines and streaming ingestion services that collect, validate, transform, and load raw data into the data warehouse and feature store. Handles batch imports (nightly shipment syncs), real-time streams (market rate ticks, GPS pings), schema validation, deduplication, and data quality checks. Typically built on Apache Kafka, Spark, or Airflow.",
+      "position": {
+        "x": 480,
+        "y": 285
+      },
+      "dataFlows": [
+        "validated records",
+        "transformed features",
+        "data quality metrics",
+        "schema violations"
+      ],
+      "trustLevel": "semi-trusted",
+      "vulnerabilities": [
+        "Schema injection attacks where malformed records bypass validation and corrupt downstream feature computation",
+        "Pipeline configuration tampering altering transformation logic to silently bias training data",
+        "Insufficient input validation allowing SQL injection or command injection through data field values",
+        "Backfill vulnerabilities where historical data re-ingestion overwrites corrected records with poisoned originals"
+      ]
+    },
+    {
+      "id": "data-warehouse",
+      "type": "datastore",
+      "label": "Data Warehouse",
+      "description": "Central repository for historical and curated datasets used in model training, validation, and backtesting. Stores cleaned shipment records, historical rates, carrier performance logs, demand signals, and ground truth labels. Serves as the single source of truth for all ML experimentation and production training jobs.",
+      "position": {
+        "x": 480,
+        "y": 585
+      },
+      "dataFlows": [
+        "training datasets",
+        "historical records",
+        "labeled examples",
+        "backtest data",
+        "audit logs"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Training data poisoning through insertion of crafted records that introduce systematic bias into model predictions",
+        "Label corruption where ground truth values are modified to degrade model accuracy on specific prediction targets",
+        "Unauthorized access to sensitive pricing history or customer-specific rate data used in training sets",
+        "Data lineage gaps making it impossible to trace which records influenced a specific model version"
+      ]
+    },
+    {
+      "id": "feature-store",
+      "type": "datastore",
+      "label": "Feature Store",
+      "description": "Centralized repository of computed, versioned features used for both model training and real-time inference. Stores pre-computed aggregations (carrier on-time rates, lane averages, seasonal indices), real-time features (current fuel price, weather score), and feature metadata (data types, freshness SLAs, lineage). Ensures training-serving consistency by providing the same feature computation logic for both contexts.",
+      "position": {
+        "x": 800,
+        "y": 285
+      },
+      "dataFlows": [
+        "computed features",
+        "feature vectors",
+        "feature metadata",
+        "freshness signals"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Feature skew between training and serving causing silent model degradation when production features diverge from training-time computation",
+        "Feature poisoning through manipulation of upstream aggregation logic to systematically bias specific feature values",
+        "Unauthorized feature access exposing proprietary business logic embedded in feature engineering (e.g., competitive pricing signals)",
+        "Stale feature values served during real-time inference due to cache invalidation failures or pipeline delays"
+      ]
+    },
+    {
+      "id": "training-pipeline",
+      "type": "component",
+      "label": "Training Pipeline",
+      "description": "Orchestrates end-to-end model training: dataset sampling, feature selection, hyperparameter tuning, cross-validation, model fitting, and evaluation against holdout sets. Runs on GPU/CPU clusters (SageMaker, Vertex AI, Kubeflow). Produces trained model artifacts, evaluation metrics, and training metadata for the experiment tracker and model registry.",
+      "position": {
+        "x": 880,
+        "y": 585
+      },
+      "dataFlows": [
+        "trained model artifacts",
+        "evaluation metrics",
+        "hyperparameter configs",
+        "training logs"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Training pipeline compromise injecting backdoors into model weights that activate on specific input patterns (trojan attacks)",
+        "Hyperparameter manipulation degrading model performance on targeted prediction classes while maintaining overall accuracy",
+        "Dependency supply chain attacks through compromised ML libraries (scikit-learn, PyTorch, XGBoost) used in the training stack",
+        "Resource exhaustion attacks triggering excessive GPU/compute consumption through crafted training configurations"
+      ]
+    },
+    {
+      "id": "experiment-tracker",
+      "type": "component",
+      "label": "ML Experiment Tracker",
+      "description": "Records and compares all training runs with their parameters, metrics, datasets, and artifacts. Provides reproducibility, audit trails, and model lineage tracking. Typically MLflow, Weights & Biases, or Neptune. Enables A/B test analysis and model comparison for promotion decisions.",
+      "position": {
+        "x": 1200,
+        "y": 735
+      },
+      "dataFlows": [
+        "experiment metadata",
+        "run comparisons",
+        "artifact lineage",
+        "metric dashboards"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Experiment metadata tampering to falsify model performance metrics and promote underperforming or backdoored models",
+        "Insufficient access controls allowing unauthorized users to modify experiment results or delete audit trails",
+        "Artifact substitution swapping legitimate model binaries with compromised versions in the experiment store",
+        "Log injection attacks embedding malicious payloads in experiment metadata displayed in tracking dashboards"
+      ]
+    },
+    {
+      "id": "model-registry",
+      "type": "datastore",
+      "label": "Model Registry",
+      "description": "Version-controlled repository of trained model artifacts with lifecycle management. Stores serialized models, serving configurations, A/B test allocations, approval workflows, and rollback history. Gates model promotion from staging to production through validation checks and human approval. Central point of control for what models are actively serving predictions.",
+      "position": {
+        "x": 1200,
+        "y": 435
+      },
+      "dataFlows": [
+        "versioned models",
+        "serving configs",
+        "A/B test allocations",
+        "approval records",
+        "rollback metadata"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Model supply chain attacks replacing registered model artifacts with trojaned versions that produce adversary-controlled predictions",
+        "Insufficient approval workflows allowing untested or malicious models to be promoted directly to production",
+        "Version rollback exploitation reverting to a known-vulnerable model version to re-enable a previously patched attack vector",
+        "Metadata poisoning altering model tags or descriptions to mislead operators about model capabilities or training data scope"
+      ]
+    },
+    {
+      "id": "model-serving",
+      "type": "model",
+      "label": "Model Serving",
+      "description": "Inference infrastructure that loads trained models from the registry and executes predictions in real-time or batch mode. Handles feature retrieval, model execution, prediction post-processing, and response formatting. Runs on dedicated serving infrastructure (TensorFlow Serving, TorchServe, Triton, SageMaker Endpoints) with auto-scaling, canary deployments, and shadow mode testing.",
+      "position": {
+        "x": 1520,
+        "y": 435
+      },
+      "dataFlows": [
+        "raw predictions",
+        "confidence scores",
+        "model version metadata",
+        "latency metrics"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Adversarial input attacks crafting feature vectors designed to force specific prediction outputs (e.g., artificially low fraud scores)",
+        "Model extraction through systematic querying to reverse-engineer proprietary pricing or scoring algorithms",
+        "Side-channel attacks inferring training data membership or sensitive feature values from prediction confidence patterns",
+        "Resource exhaustion through high-volume prediction requests designed to degrade serving latency or trigger auto-scaling costs"
+      ]
+    },
+    {
+      "id": "prediction-api",
+      "type": "component",
+      "label": "Prediction API",
+      "description": "REST/gRPC endpoint that exposes model predictions to downstream business systems. Handles authentication, rate limiting, request validation, response formatting, and SLA enforcement. Translates raw model outputs into business-meaningful predictions (dollar amounts, probability scores, time estimates). Acts as the trust boundary between the ML platform and consuming applications.",
+      "position": {
+        "x": 1520,
+        "y": 210
+      },
+      "dataFlows": [
+        "formatted predictions",
+        "prediction explanations",
+        "SLA metrics",
+        "usage logs"
+      ],
+      "trustLevel": "semi-trusted",
+      "vulnerabilities": [
+        "Input manipulation sending crafted API payloads designed to produce adversary-favorable predictions (e.g., suppressed fraud alerts)",
+        "Rate limit bypass through distributed requests allowing bulk model extraction or prediction harvesting",
+        "API key leakage exposing prediction endpoints to unauthorized consumers who can exploit model outputs",
+        "Insufficient input validation allowing injection of out-of-distribution feature values that produce unreliable predictions"
+      ]
+    },
+    {
+      "id": "business-applications",
+      "type": "user",
+      "label": "Business Applications",
+      "description": "Downstream systems that consume model predictions and present them to end users or automated workflows. Includes pricing UIs (rate quoting tools), operations dashboards (capacity planning screens), booking systems (automated rate proposals), fraud review queues, and ETA tracking interfaces. These systems act on predictions and are the ultimate consumers of model output.",
+      "position": {
+        "x": 1920,
+        "y": 210
+      },
+      "dataFlows": [
+        "displayed predictions",
+        "automated decisions",
+        "user overrides",
+        "business actions"
+      ],
+      "trustLevel": "untrusted",
+      "vulnerabilities": [
+        "Prediction misuse where business logic over-relies on model outputs without human review for high-stakes decisions",
+        "Display manipulation presenting predictions without confidence intervals, leading users to treat uncertain forecasts as definitive",
+        "Feedback loop gaming where users systematically override predictions to bias future training data in their favor",
+        "Cross-system data leakage exposing proprietary pricing predictions to unauthorized users through shared dashboards"
+      ]
+    },
+    {
+      "id": "model-monitor",
+      "type": "component",
+      "label": "Model Monitor",
+      "description": "Continuous monitoring system that tracks model performance, data drift, prediction distribution shifts, and operational health in production. Detects concept drift (changing relationship between features and outcomes), data drift (shifting input distributions), and model degradation. Triggers alerts and automated retraining workflows when performance drops below thresholds.",
+      "position": {
+        "x": 1520,
+        "y": 735
+      },
+      "dataFlows": [
+        "drift alerts",
+        "performance dashboards",
+        "degradation signals",
+        "retraining triggers"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Alert suppression attacks manipulating monitoring thresholds or metrics to hide model degradation caused by adversarial inputs",
+        "Monitoring evasion through gradual, low-magnitude data poisoning that stays below drift detection thresholds",
+        "False positive flooding generating excessive alerts to cause alert fatigue and mask genuine model compromise",
+        "Metric manipulation tampering with performance baselines to make a degraded model appear healthy"
+      ]
+    },
+    {
+      "id": "ground-truth-feedback",
+      "type": "component",
+      "label": "Ground Truth Feedback",
+      "description": "Collects actual outcomes (real delivery times, actual market rates, confirmed fraud cases) and compares them against model predictions to compute accuracy metrics and generate labeled training data for model retraining. Feedback latency varies from minutes (fraud confirmation) to weeks (final shipment settlement). Critical for continuous model improvement and drift correction.",
+      "position": {
+        "x": 1920,
+        "y": 585
+      },
+      "dataFlows": [
+        "actual outcomes",
+        "prediction-vs-actual pairs",
+        "labeled retraining data",
+        "accuracy metrics"
+      ],
+      "trustLevel": "semi-trusted",
+      "vulnerabilities": [
+        "Feedback poisoning injecting false ground truth labels to systematically degrade model accuracy during retraining",
+        "Delayed feedback exploitation where adversaries act during the gap between prediction and outcome confirmation",
+        "Selective feedback bias where certain outcome categories are underreported, skewing retraining data distribution",
+        "Label flipping attacks modifying confirmed outcomes (e.g., marking fraudulent transactions as legitimate) to corrupt retraining sets"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "sources-to-ingestion",
+      "source": "data-sources",
+      "target": "data-ingestion",
+      "label": "Raw data feeds (batch and streaming)",
+      "dataType": "raw data",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "ingestion-to-warehouse",
+      "source": "data-ingestion",
+      "target": "data-warehouse",
+      "label": "Cleaned and validated records",
+      "dataType": "structured data",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "ingestion-to-feature-store",
+      "source": "data-ingestion",
+      "target": "feature-store",
+      "label": "Real-time feature updates",
+      "dataType": "feature values",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "warehouse-to-feature-store",
+      "source": "data-warehouse",
+      "target": "feature-store",
+      "label": "Historical aggregations and batch features",
+      "dataType": "feature values",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "warehouse-to-training",
+      "source": "data-warehouse",
+      "target": "training-pipeline",
+      "label": "Training datasets with labels",
+      "dataType": "training data",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "feature-store-to-training",
+      "source": "feature-store",
+      "target": "training-pipeline",
+      "label": "Feature vectors for training",
+      "dataType": "feature values",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "feature-store-to-serving",
+      "source": "feature-store",
+      "target": "model-serving",
+      "label": "Real-time feature vectors for inference",
+      "dataType": "feature values",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "training-to-experiment-tracker",
+      "source": "training-pipeline",
+      "target": "experiment-tracker",
+      "label": "Run metrics, parameters, and artifacts",
+      "dataType": "experiment metadata",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "training-to-registry",
+      "source": "training-pipeline",
+      "target": "model-registry",
+      "label": "Trained model artifacts for registration",
+      "dataType": "model artifact",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "registry-to-serving",
+      "source": "model-registry",
+      "target": "model-serving",
+      "label": "Promoted model artifacts and serving config",
+      "dataType": "model artifact",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "serving-to-prediction-api",
+      "source": "model-serving",
+      "target": "prediction-api",
+      "label": "Raw predictions and confidence scores",
+      "dataType": "predictions",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "prediction-api-to-business",
+      "source": "prediction-api",
+      "target": "business-applications",
+      "label": "Formatted predictions and explanations",
+      "dataType": "predictions",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "serving-to-monitor",
+      "source": "model-serving",
+      "target": "model-monitor",
+      "label": "Prediction logs and latency metrics",
+      "dataType": "telemetry",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "business-to-feedback",
+      "source": "business-applications",
+      "target": "ground-truth-feedback",
+      "label": "Actual outcomes and user overrides",
+      "dataType": "ground truth",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "feedback-to-monitor",
+      "source": "ground-truth-feedback",
+      "target": "model-monitor",
+      "label": "Prediction accuracy metrics",
+      "dataType": "evaluation metrics",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "feedback-to-warehouse",
+      "source": "ground-truth-feedback",
+      "target": "data-warehouse",
+      "label": "Labeled outcomes for retraining datasets",
+      "dataType": "labeled data",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "monitor-to-training",
+      "source": "model-monitor",
+      "target": "training-pipeline",
+      "label": "Retraining triggers on drift detection",
+      "dataType": "control signal",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "monitor-to-registry",
+      "source": "model-monitor",
+      "target": "model-registry",
+      "label": "Model health status and rollback signals",
+      "dataType": "control signal",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "experiment-tracker-to-registry",
+      "source": "experiment-tracker",
+      "target": "model-registry",
+      "label": "Model promotion recommendations",
+      "dataType": "experiment metadata",
+      "encrypted": true,
+      "validated": true
+    }
+  ],
+  "trustBoundaries": [
+    {
+      "id": "external-data-boundary",
+      "label": "External Data Boundary",
+      "nodeIds": [
+        "data-sources",
+        "data-ingestion"
+      ],
+      "boundaryType": "network"
+    },
+    {
+      "id": "model-serving-boundary",
+      "label": "Model Serving Boundary",
+      "nodeIds": [
+        "model-serving",
+        "prediction-api"
+      ],
+      "boundaryType": "privilege"
+    },
+    {
+      "id": "business-application-boundary",
+      "label": "Business Application Boundary",
+      "nodeIds": [
+        "business-applications"
+      ],
+      "boundaryType": "auth"
+    },
+    {
+      "id": "feedback-loop-boundary",
+      "label": "Feedback Loop Boundary",
+      "nodeIds": [
+        "ground-truth-feedback",
+        "model-monitor"
+      ],
+      "boundaryType": "data-classification"
+    }
+  ],
+  "applicableThreats": [
+    "LLM02",
+    "LLM03",
+    "LLM04",
+    "LLM05",
+    "LLM10"
+  ]
+}

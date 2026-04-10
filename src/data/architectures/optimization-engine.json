@@ -1,0 +1,481 @@
+{
+  "id": "optimization-engine",
+  "name": "Optimization & Prescriptive Engine",
+  "category": "prescriptive",
+  "description": "Optimization system that takes business constraints, objectives, and real-time data to compute optimal decisions. Uses mathematical optimization (linear programming, constraint satisfaction) combined with ML-based scoring to recommend actions like optimal routes, pricing, and resource allocation.",
+  "logisticsContext": "Optimization engines drive route planning, container load optimization, dynamic pricing, warehouse slotting, carrier allocation, and fleet scheduling. Suboptimal recommendations directly increase costs and reduce service levels.",
+  "solutions": [
+    "Route Optimizer",
+    "Load Planner",
+    "Dynamic Pricing Engine",
+    "Carrier Allocator",
+    "Fleet Scheduler",
+    "Warehouse Slotting Optimizer",
+    "Container Stacking Optimizer",
+    "Network Design Tool"
+  ],
+  "nodes": [
+    {
+      "id": "business-rules-engine",
+      "type": "component",
+      "label": "Business Rules Engine",
+      "description": "Encodes hard constraints, SLA requirements, regulatory limits, and operational policies that all candidate solutions must satisfy. Rules include maximum transit times, hazmat restrictions, weight limits, driver hours-of-service regulations, carrier contract terms, and customer-specific delivery windows. This is the authoritative source of truth for what constitutes a feasible solution.",
+      "position": {
+        "x": 240,
+        "y": 210
+      },
+      "dataFlows": [
+        "constraint sets",
+        "SLA parameters",
+        "regulatory rules",
+        "feasibility criteria"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Rule tampering through unauthorized configuration changes that relax safety or compliance constraints",
+        "Inconsistent rule versions across environments causing different optimization outcomes in staging vs production",
+        "Missing constraint coverage for edge cases such as new trade lanes, seasonal restrictions, or recently enacted regulations",
+        "Rule injection via external integrations that supply constraint parameters from untrusted sources"
+      ]
+    },
+    {
+      "id": "objective-function",
+      "type": "component",
+      "label": "Objective Function",
+      "description": "Defines the mathematical optimization goal \u00e2\u20ac\u201d typically a weighted combination of cost minimization, service level maximization, asset utilization, and carbon footprint reduction. Weights are tuned by operations leadership and encode business priorities. The objective function translates strategic goals into a computable scoring formula that the constraint solver maximizes or minimizes.",
+      "position": {
+        "x": 240,
+        "y": 510
+      },
+      "dataFlows": [
+        "cost weights",
+        "service level targets",
+        "optimization criteria",
+        "priority rankings"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Weight manipulation that silently shifts optimization priorities to favor specific carriers, routes, or pricing outcomes",
+        "Objective function drift where weights become stale and no longer reflect current business strategy",
+        "Multi-objective conflicts producing Pareto-suboptimal solutions when cost and service level targets are poorly balanced",
+        "Lack of audit trail for weight changes making it impossible to trace when and why optimization behavior shifted"
+      ]
+    },
+    {
+      "id": "realtime-data-feeds",
+      "type": "external",
+      "label": "Real-time Data Feeds",
+      "description": "Ingests live data from external sources including GPS telemetry, weather APIs, traffic services, port congestion feeds, carrier capacity APIs, fuel price indices, and spot market rates. This data provides the current-state inputs that the optimizer needs to produce relevant recommendations. Data quality and freshness directly impact recommendation accuracy.",
+      "position": {
+        "x": 240,
+        "y": 810
+      },
+      "dataFlows": [
+        "GPS coordinates",
+        "weather forecasts",
+        "traffic conditions",
+        "capacity levels",
+        "market rates",
+        "fuel prices"
+      ],
+      "trustLevel": "untrusted",
+      "vulnerabilities": [
+        "Data poisoning through compromised or spoofed GPS, weather, or traffic feeds that steer the optimizer toward suboptimal routes",
+        "Stale data from API outages or caching failures causing the optimizer to plan against outdated conditions",
+        "Rate feed manipulation where a malicious carrier API reports false capacity or pricing to gain allocation advantage",
+        "Denial of service through feed flooding that overwhelms ingestion pipelines and degrades optimization timeliness",
+        "Man-in-the-middle attacks on unencrypted feed connections altering transit times or capacity figures in flight"
+      ]
+    },
+    {
+      "id": "historical-data",
+      "type": "datastore",
+      "label": "Historical Data Store",
+      "description": "Repository of past optimization decisions and their real-world outcomes \u00e2\u20ac\u201d actual transit times vs predicted, realized costs vs estimated, service level hits and misses, carrier performance records, and seasonal demand patterns. Used by the ML scoring model for training and by the performance monitor for accuracy tracking. Contains years of operational intelligence.",
+      "position": {
+        "x": 640,
+        "y": 960
+      },
+      "dataFlows": [
+        "past decisions",
+        "outcome records",
+        "carrier performance history",
+        "demand patterns",
+        "cost actuals"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Training data poisoning through injection of fabricated historical records that skew model predictions",
+        "Data retention policy violations if historical records contain PII or competitively sensitive pricing not properly governed",
+        "Schema drift when data format changes break downstream model training pipelines without detection",
+        "Survivorship bias if only successful optimizations are recorded, causing models to miss failure patterns"
+      ]
+    },
+    {
+      "id": "constraint-solver",
+      "type": "component",
+      "label": "Constraint Solver",
+      "description": "Mathematical optimization engine (OR-Tools, Gurobi, CPLEX, or custom solver) that finds feasible solutions satisfying all hard constraints from the business rules engine while optimizing the objective function. Handles linear programming, mixed-integer programming, constraint satisfaction, and vehicle routing problems. Produces a ranked set of candidate solutions within computational time budgets.",
+      "position": {
+        "x": 880,
+        "y": 360
+      },
+      "dataFlows": [
+        "candidate solutions",
+        "feasibility reports",
+        "solver diagnostics",
+        "computation metrics"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Solver timeout exploitation where adversarial input complexity forces fallback to inferior heuristic solutions",
+        "License server dependency creating single points of failure for commercial solvers like Gurobi or CPLEX",
+        "Numerical instability in edge cases producing solutions that appear feasible but violate constraints at execution",
+        "Supply chain risk if solver library updates introduce regressions or backdoors in optimization algorithms"
+      ]
+    },
+    {
+      "id": "ml-scoring-model",
+      "type": "model",
+      "label": "ML Scoring Model",
+      "description": "Machine learning model that predicts real-world outcomes for candidate solutions generated by the constraint solver. Estimates actual transit times, delivery success probability, carrier reliability scores, and cost overrun likelihood based on historical patterns and current conditions. Augments mathematical optimization with learned patterns that are difficult to encode as explicit constraints.",
+      "position": {
+        "x": 880,
+        "y": 660
+      },
+      "dataFlows": [
+        "outcome predictions",
+        "confidence scores",
+        "feature importances",
+        "model explanations"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Model poisoning through corrupted training data that systematically biases predictions toward specific carriers or routes",
+        "Adversarial inputs crafted to exploit model blind spots and produce artificially high scores for suboptimal solutions",
+        "Concept drift as market conditions change faster than model retraining cycles, degrading prediction accuracy",
+        "Model supply chain compromise if pre-trained components or embeddings are sourced from untrusted repositories",
+        "Lack of explainability making it difficult to audit why certain solutions receive inflated or deflated scores"
+      ]
+    },
+    {
+      "id": "solution-evaluator",
+      "type": "component",
+      "label": "Solution Evaluator",
+      "description": "Combines constraint solver output with ML scoring model predictions to rank, filter, and select the best candidate solutions. Applies business logic filters (minimum confidence thresholds, diversity requirements, risk limits) and produces a final ranked recommendation set. Implements guardrails that reject solutions failing sanity checks even if they score well mathematically.",
+      "position": {
+        "x": 1280,
+        "y": 510
+      },
+      "dataFlows": [
+        "ranked recommendations",
+        "evaluation reports",
+        "rejection reasons",
+        "confidence assessments"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Ranking manipulation if evaluation weights are modified to consistently favor specific outcomes or vendors",
+        "Guardrail bypass when edge-case solutions pass individual checks but fail holistic reasonableness tests",
+        "Insufficient diversity in recommendations creating over-reliance on a single carrier, route, or strategy",
+        "Threshold misconfiguration rejecting viable solutions or accepting risky ones due to poorly calibrated cutoffs"
+      ]
+    },
+    {
+      "id": "decision-api",
+      "type": "component",
+      "label": "Decision API",
+      "description": "RESTful or gRPC API layer that serves optimization recommendations to consuming business systems \u00e2\u20ac\u201d TMS, WMS, pricing engines, booking platforms, and dispatch systems. Handles request authentication, rate limiting, response formatting, and SLA enforcement. Provides both synchronous (real-time pricing) and asynchronous (batch route planning) recommendation endpoints.",
+      "position": {
+        "x": 1600,
+        "y": 360
+      },
+      "dataFlows": [
+        "API responses",
+        "recommendation payloads",
+        "error codes",
+        "rate limit signals"
+      ],
+      "trustLevel": "semi-trusted",
+      "vulnerabilities": [
+        "API authentication bypass allowing unauthorized systems to consume or influence optimization recommendations",
+        "Response tampering if API responses are not integrity-protected, allowing man-in-the-middle modification of recommendations",
+        "Rate limit exhaustion through automated queries that consume solver capacity and delay legitimate optimization requests",
+        "Information disclosure through verbose API error messages revealing solver internals, constraint structures, or pricing logic"
+      ]
+    },
+    {
+      "id": "operations-dashboard",
+      "type": "user",
+      "label": "Operations Dashboard",
+      "description": "Web-based interface where dispatchers, planners, and operations managers review optimization recommendations before execution. Displays recommended routes, load plans, pricing suggestions, and carrier allocations alongside confidence scores, cost breakdowns, and alternative options. Supports manual override, approval workflows, and what-if scenario analysis.",
+      "position": {
+        "x": 1600,
+        "y": 735
+      },
+      "dataFlows": [
+        "visual recommendations",
+        "override inputs",
+        "approval decisions",
+        "scenario parameters"
+      ],
+      "trustLevel": "untrusted",
+      "vulnerabilities": [
+        "Social engineering through manipulated dashboard displays that make suboptimal recommendations appear optimal",
+        "Override abuse where authorized users consistently override optimization to favor specific carriers for kickback arrangements",
+        "Session hijacking granting unauthorized access to recommendation approval workflows",
+        "Cross-site scripting if recommendation labels or carrier names containing malicious payloads render unsanitized in the dashboard"
+      ]
+    },
+    {
+      "id": "execution-system",
+      "type": "component",
+      "label": "Execution System",
+      "description": "Applies approved optimization decisions by triggering downstream actions \u00e2\u20ac\u201d booking carriers, dispatching vehicles, updating pricing in quoting systems, assigning warehouse slots, and generating load plans. Bridges the gap between recommendation and action. Implements rollback capabilities for decisions that fail during execution.",
+      "position": {
+        "x": 1840,
+        "y": 510
+      },
+      "dataFlows": [
+        "booking confirmations",
+        "dispatch orders",
+        "price updates",
+        "slot assignments",
+        "execution status"
+      ],
+      "trustLevel": "semi-trusted",
+      "vulnerabilities": [
+        "Unauthorized execution of recommendations that bypassed human approval workflows",
+        "Replay attacks re-executing previously approved decisions under changed conditions",
+        "Partial execution failures leaving the system in an inconsistent state (e.g., carrier booked but dispatch not updated)",
+        "Rollback failures when downstream systems do not support transactional reversal of applied decisions"
+      ]
+    },
+    {
+      "id": "performance-monitor",
+      "type": "component",
+      "label": "Performance Monitor",
+      "description": "Continuously tracks how optimization recommendations compare to actual outcomes \u00e2\u20ac\u201d predicted vs actual transit times, estimated vs realized costs, planned vs actual service levels. Detects model drift, data quality degradation, and systematic biases. Generates alerts when recommendation accuracy drops below thresholds and feeds performance data back to model retraining pipelines.",
+      "position": {
+        "x": 1040,
+        "y": 1110
+      },
+      "dataFlows": [
+        "accuracy metrics",
+        "drift alerts",
+        "performance reports",
+        "retraining signals",
+        "audit logs"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Alert suppression through tampering with monitoring thresholds that masks declining recommendation quality",
+        "Metric gaming when outcome data is selectively reported to inflate apparent optimization accuracy",
+        "Delayed detection if monitoring operates on batch cycles while recommendation quality degrades in real time",
+        "Feedback loop poisoning where manipulated performance data corrupts the retraining pipeline for the ML scoring model"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "rules-to-solver",
+      "source": "business-rules-engine",
+      "target": "constraint-solver",
+      "label": "Hard constraints and feasibility rules",
+      "dataType": "configuration",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "objective-to-solver",
+      "source": "objective-function",
+      "target": "constraint-solver",
+      "label": "Optimization criteria and weights",
+      "dataType": "configuration",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "feeds-to-solver",
+      "source": "realtime-data-feeds",
+      "target": "constraint-solver",
+      "label": "Current conditions (GPS, weather, traffic, rates)",
+      "dataType": "external data",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "feeds-to-ml-model",
+      "source": "realtime-data-feeds",
+      "target": "ml-scoring-model",
+      "label": "Real-time features for prediction",
+      "dataType": "external data",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "historical-to-ml-model",
+      "source": "historical-data",
+      "target": "ml-scoring-model",
+      "label": "Training data and outcome patterns",
+      "dataType": "training data",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "solver-to-evaluator",
+      "source": "constraint-solver",
+      "target": "solution-evaluator",
+      "label": "Candidate solutions with feasibility scores",
+      "dataType": "optimization results",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "ml-model-to-evaluator",
+      "source": "ml-scoring-model",
+      "target": "solution-evaluator",
+      "label": "Outcome predictions and confidence scores",
+      "dataType": "model response",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "evaluator-to-api",
+      "source": "solution-evaluator",
+      "target": "decision-api",
+      "label": "Ranked recommendations with explanations",
+      "dataType": "optimization results",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "api-to-dashboard",
+      "source": "decision-api",
+      "target": "operations-dashboard",
+      "label": "Recommendations for human review",
+      "dataType": "API call",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "api-to-execution",
+      "source": "decision-api",
+      "target": "execution-system",
+      "label": "Approved recommendations for execution",
+      "dataType": "API call",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "dashboard-to-execution",
+      "source": "operations-dashboard",
+      "target": "execution-system",
+      "label": "Human-approved or overridden decisions",
+      "dataType": "user input",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "execution-to-monitor",
+      "source": "execution-system",
+      "target": "performance-monitor",
+      "label": "Execution outcomes and status updates",
+      "dataType": "telemetry",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "evaluator-to-monitor",
+      "source": "solution-evaluator",
+      "target": "performance-monitor",
+      "label": "Predicted outcomes for accuracy tracking",
+      "dataType": "optimization results",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "monitor-to-historical",
+      "source": "performance-monitor",
+      "target": "historical-data",
+      "label": "Decision-outcome pairs for model improvement",
+      "dataType": "telemetry",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "monitor-to-ml-model",
+      "source": "performance-monitor",
+      "target": "ml-scoring-model",
+      "label": "Drift alerts and retraining triggers",
+      "dataType": "telemetry",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "dashboard-to-rules",
+      "source": "operations-dashboard",
+      "target": "business-rules-engine",
+      "label": "Constraint updates and rule overrides",
+      "dataType": "user input",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "dashboard-to-objective",
+      "source": "operations-dashboard",
+      "target": "objective-function",
+      "label": "Priority weight adjustments",
+      "dataType": "user input",
+      "encrypted": true,
+      "validated": false
+    }
+  ],
+  "trustBoundaries": [
+    {
+      "id": "external-data-boundary",
+      "label": "External Data Boundary",
+      "nodeIds": [
+        "realtime-data-feeds",
+        "operations-dashboard"
+      ],
+      "boundaryType": "network"
+    },
+    {
+      "id": "solver-boundary",
+      "label": "Optimization Solver Boundary",
+      "nodeIds": [
+        "constraint-solver",
+        "ml-scoring-model",
+        "solution-evaluator",
+        "business-rules-engine",
+        "objective-function"
+      ],
+      "boundaryType": "privilege"
+    },
+    {
+      "id": "execution-boundary",
+      "label": "Execution Boundary",
+      "nodeIds": [
+        "decision-api",
+        "execution-system"
+      ],
+      "boundaryType": "auth"
+    },
+    {
+      "id": "monitoring-boundary",
+      "label": "Monitoring & Data Boundary",
+      "nodeIds": [
+        "performance-monitor",
+        "historical-data"
+      ],
+      "boundaryType": "data-classification"
+    }
+  ],
+  "applicableThreats": [
+    "LLM02",
+    "LLM04",
+    "LLM05",
+    "LLM10"
+  ]
+}

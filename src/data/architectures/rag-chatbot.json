@@ -1,0 +1,594 @@
+{
+  "id": "rag-chatbot",
+  "name": "RAG Chatbot / Knowledge Assistant",
+  "category": "generative",
+  "description": "Retrieval-Augmented Generation chatbot that answers user queries by retrieving relevant documents from a knowledge base, assembling context, and generating responses through a large language model. This is the most common AI pattern in enterprise deployments, combining semantic search with generative AI to provide grounded, domain-specific answers while reducing hallucination risk.",
+  "logisticsContext": "RAG chatbots are the most deployed AI pattern in logistics, handling rate inquiries, shipment tracking, customs procedures, and internal knowledge access. They process sensitive data including contracted rates, customer PII, and trade compliance information.",
+  "solutions": [
+    "EVO-Info (RAG Chatbot)",
+    "SOPhie Chatbot",
+    "Tradelane Navigator Chatbot",
+    "Aissistant",
+    "FTL Bot",
+    "HR Chatbot ES",
+    "Customer Agent Support Bot",
+    "Customs User Support Bot",
+    "iCap Support Chatbot",
+    "MDF AI Bot",
+    "NL OPS AI Agent",
+    "Nabu",
+    "Market Update Bot",
+    "Sales360 LeAP",
+    "Talk to Your OAS Data",
+    "Freight Rate Assistant",
+    "Documentation Helper",
+    "Compliance Q&A Bot",
+    "Port Operations Assistant",
+    "Carrier Onboarding Bot",
+    "Claims Processing Assistant",
+    "Trade Lane Advisor",
+    "Warehouse Operations Bot",
+    "Booking Confirmation Bot",
+    "SOP Navigator"
+  ],
+  "nodes": [
+    {
+      "id": "user-interface",
+      "type": "user",
+      "label": "User Interface",
+      "description": "Chat widget, API endpoint, or Teams/Slack integration where users submit natural language queries. This is the primary attack surface for prompt injection, as all user input enters the system here. Handles rate inquiries, shipment tracking questions, SOP lookups, and customs procedure queries.",
+      "position": {
+        "x": 160,
+        "y": 435
+      },
+      "dataFlows": [
+        "user queries",
+        "natural language questions",
+        "follow-up messages"
+      ],
+      "trustLevel": "untrusted",
+      "vulnerabilities": [
+        "Direct prompt injection via crafted user input designed to override system instructions",
+        "Automated bot abuse sending high-volume queries to exhaust API quotas or model tokens",
+        "Session hijacking if conversation state is stored client-side without integrity checks",
+        "Cross-site scripting if chat widget renders unsanitized HTML in responses"
+      ]
+    },
+    {
+      "id": "input-validation",
+      "type": "component",
+      "label": "Input Validation Layer",
+      "description": "Sanitizes and validates all incoming user input before it reaches query processing. Enforces character length limits, strips known injection patterns, applies content filtering rules, and rate-limits requests per user session. First line of defense against prompt injection and resource exhaustion.",
+      "position": {
+        "x": 560,
+        "y": 435
+      },
+      "dataFlows": [
+        "sanitized queries",
+        "blocked request notifications",
+        "rate limit signals"
+      ],
+      "trustLevel": "semi-trusted",
+      "vulnerabilities": [
+        "Bypass through encoding tricks (Unicode homoglyphs, base64, URL encoding) that evade pattern matching",
+        "Incomplete blocklist allowing novel injection patterns not yet catalogued",
+        "Rate limiting circumvention through distributed requests or session rotation",
+        "False positives blocking legitimate queries containing technical terminology"
+      ]
+    },
+    {
+      "id": "query-processing",
+      "type": "component",
+      "label": "Query Processing",
+      "description": "Reformulates user queries for optimal retrieval, performs intent classification, expands abbreviations, resolves coreferences from conversation history, and determines which knowledge domains to search. Transforms raw user input into structured retrieval queries.",
+      "position": {
+        "x": 960,
+        "y": 360
+      },
+      "dataFlows": [
+        "reformulated queries",
+        "intent labels",
+        "domain classifications",
+        "expanded search terms"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Intent misclassification causing retrieval from wrong knowledge domains or bypassing access controls",
+        "Query expansion inadvertently broadening scope to include restricted document collections",
+        "Conversation history injection where prior turns contain hidden instructions that influence reformulation"
+      ]
+    },
+    {
+      "id": "embedding-model",
+      "type": "model",
+      "label": "Embedding Model",
+      "description": "Converts natural language queries and documents into dense vector representations for semantic similarity search. Typically a transformer model (e.g., text-embedding-ada-002, BGE, E5) that maps text to high-dimensional vectors. Used both at query time and during document ingestion.",
+      "position": {
+        "x": 1360,
+        "y": 360
+      },
+      "dataFlows": [
+        "query vectors",
+        "document embeddings",
+        "similarity scores"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Supply chain compromise if embedding model weights are sourced from untrusted repositories",
+        "Adversarial inputs crafted to produce misleading vector representations that retrieve wrong documents",
+        "Model version drift causing inconsistency between query embeddings and previously indexed document embeddings",
+        "Embedding inversion attacks that reconstruct sensitive source text from stored vectors"
+      ]
+    },
+    {
+      "id": "vector-database",
+      "type": "datastore",
+      "label": "Vector Database",
+      "description": "Stores and indexes document embedding vectors for fast approximate nearest-neighbor search. Contains vectorized representations of all knowledge base documents. Performs similarity search to find the most relevant document chunks for a given query vector. Examples: Pinecone, Weaviate, Qdrant, pgvector.",
+      "position": {
+        "x": 1760,
+        "y": 210
+      },
+      "dataFlows": [
+        "stored embeddings",
+        "similarity search results",
+        "ranked document IDs",
+        "metadata filters"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Data poisoning through injection of adversarial embeddings that surface malicious content for targeted queries",
+        "Unauthorized access to vector indices exposing the semantic content of proprietary documents",
+        "Index corruption causing retrieval failures or returning stale document chunks",
+        "Metadata filter bypass allowing retrieval of documents outside a user's authorized scope"
+      ]
+    },
+    {
+      "id": "knowledge-base",
+      "type": "datastore",
+      "label": "Knowledge Base",
+      "description": "Source document repository containing SOPs, operational manuals, rate cards, customer documentation, customs procedures, trade compliance guides, and internal policies. Documents are chunked, embedded, and indexed into the vector database during ingestion. Data sensitivity varies from public procedures to confidential contracted rates.",
+      "position": {
+        "x": 1760,
+        "y": 585
+      },
+      "dataFlows": [
+        "raw documents",
+        "document chunks",
+        "metadata",
+        "rate cards",
+        "SOPs",
+        "compliance documents"
+      ],
+      "trustLevel": "semi-trusted",
+      "vulnerabilities": [
+        "Indirect prompt injection via malicious content embedded in uploaded documents that executes when retrieved",
+        "Data poisoning through insertion of incorrect SOPs or modified rate cards that the LLM presents as authoritative",
+        "Sensitive data exposure if confidential rate cards or PII-containing documents lack proper access classification",
+        "Stale content causing the chatbot to provide outdated customs procedures or expired rate information",
+        "Cross-tenant data leakage if multi-customer documents share the same vector namespace without isolation"
+      ]
+    },
+    {
+      "id": "retrieval-pipeline",
+      "type": "component",
+      "label": "Retrieval Pipeline",
+      "description": "Orchestrates the retrieval process: performs top-K similarity search against the vector database, applies re-ranking and relevance scoring, filters results by metadata and access controls, and assembles the final context window sent to the LLM. Controls how much and which retrieved content influences the model's response.",
+      "position": {
+        "x": 1360,
+        "y": 660
+      },
+      "dataFlows": [
+        "ranked document chunks",
+        "assembled context",
+        "relevance scores",
+        "filtered results"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Context window manipulation where adversarial documents are crafted to always score highest in relevance ranking",
+        "Excessive context assembly including irrelevant but sensitive document chunks in the LLM prompt",
+        "Re-ranking bias causing systematic suppression of certain document types or sources",
+        "Access control bypass in metadata filtering allowing cross-tenant document retrieval"
+      ]
+    },
+    {
+      "id": "llm-foundation-model",
+      "type": "model",
+      "label": "LLM / Foundation Model",
+      "description": "Large language model that processes the assembled context (retrieved documents) combined with the user query and system prompt to generate a natural language response. This is the core generative component. May be cloud-hosted (GPT-4, Claude, Gemini) or self-hosted (Llama, Mistral). Processes sensitive context including contracted rates, customer data, and compliance information.",
+      "position": {
+        "x": 960,
+        "y": 735
+      },
+      "dataFlows": [
+        "generated responses",
+        "reasoning traces",
+        "token usage metrics"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Prompt injection via retrieved context causing the model to ignore system instructions and follow attacker commands",
+        "Sensitive information disclosure when the model reveals confidential data from its context window in responses",
+        "Hallucination generating fabricated rates, procedures, or compliance requirements that appear authoritative",
+        "System prompt leakage when crafted queries cause the model to reveal its internal instructions",
+        "Training data extraction through carefully constructed prompts that elicit memorized pre-training content",
+        "Unbounded token consumption from adversarial queries designed to maximize output length and API costs"
+      ]
+    },
+    {
+      "id": "system-prompt",
+      "type": "component",
+      "label": "System Prompt",
+      "description": "Defines the LLM's role, behavioral constraints, output format requirements, topic boundaries, and safety guardrails. Contains instructions like domain restrictions, response length limits, citation requirements, and prohibited actions. This is a critical security component \u00e2\u20ac\u201d its integrity determines the chatbot's behavioral envelope.",
+      "position": {
+        "x": 560,
+        "y": 810
+      },
+      "dataFlows": [
+        "role instructions",
+        "output constraints",
+        "safety guardrails",
+        "domain boundaries"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Prompt leakage through adversarial queries that trick the LLM into revealing system prompt contents",
+        "Instruction override when injected content in retrieved documents supersedes system prompt constraints",
+        "Insufficient guardrails allowing the model to operate outside intended domain boundaries",
+        "Hardcoded secrets if API keys or internal URLs are embedded in the system prompt text"
+      ]
+    },
+    {
+      "id": "output-filter",
+      "type": "component",
+      "label": "Output Filter",
+      "description": "Post-processing layer that validates LLM responses before delivery to the user. Performs PII detection and redaction, hallucination scoring against retrieved sources, response format validation, toxicity filtering, and ensures responses stay within authorized topic boundaries. Last line of defense before user-facing output.",
+      "position": {
+        "x": 560,
+        "y": 1110
+      },
+      "dataFlows": [
+        "validated responses",
+        "filtered content",
+        "PII redaction logs",
+        "hallucination scores"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "PII detection gaps missing novel formats of personal data (e.g., coded customer references, internal rate IDs)",
+        "Hallucination checker false negatives when fabricated content is plausible but ungrounded",
+        "Filter bypass through encoding or formatting tricks that evade pattern-based detection",
+        "Insufficient validation allowing the model to output executable code or markdown injection"
+      ]
+    },
+    {
+      "id": "response-delivery",
+      "type": "component",
+      "label": "Response Delivery",
+      "description": "Formats and transmits the validated response back to the user through the appropriate channel (chat widget, API response, Teams message, email). Handles response streaming, citation formatting, source attribution, and conversation state persistence.",
+      "position": {
+        "x": 160,
+        "y": 1110
+      },
+      "dataFlows": [
+        "formatted responses",
+        "source citations",
+        "conversation state updates"
+      ],
+      "trustLevel": "semi-trusted",
+      "vulnerabilities": [
+        "Response tampering if delivery channel lacks integrity protection (e.g., HTTP without TLS)",
+        "Citation spoofing displaying fake source attributions that lend false credibility to hallucinated content",
+        "Conversation state manipulation if session data is stored client-side without server validation",
+        "Information leakage through verbose error messages exposing internal system details"
+      ]
+    },
+    {
+      "id": "logging-monitoring",
+      "type": "component",
+      "label": "Logging & Monitoring",
+      "description": "Captures conversation logs, query-response pairs, usage metrics, retrieval performance data, error rates, and anomaly detection signals. Provides audit trail for compliance, enables abuse detection, tracks model performance degradation, and supports cost monitoring for API-based LLM usage.",
+      "position": {
+        "x": 1360,
+        "y": 1110
+      },
+      "dataFlows": [
+        "conversation logs",
+        "usage metrics",
+        "anomaly alerts",
+        "performance telemetry",
+        "audit records"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Log injection attacks embedding malicious payloads in queries that execute when logs are viewed in dashboards",
+        "Sensitive data in logs if PII or confidential rates are stored in conversation records without redaction",
+        "Insufficient retention policies violating data protection regulations (GDPR, SOX) for logged conversations",
+        "Alert fatigue from poorly tuned anomaly detection missing genuine attack patterns in noise"
+      ]
+    },
+    {
+      "id": "admin-panel",
+      "type": "component",
+      "label": "Admin Panel",
+      "description": "Management interface for knowledge base administration, system prompt engineering, analytics dashboards, user management, and model configuration. High-privilege access point that controls chatbot behavior, document ingestion, and safety guardrails. Typically accessed by product owners, ML engineers, and content managers.",
+      "position": {
+        "x": 1760,
+        "y": 1110
+      },
+      "dataFlows": [
+        "configuration changes",
+        "document uploads",
+        "prompt updates",
+        "analytics queries",
+        "user management actions"
+      ],
+      "trustLevel": "trusted",
+      "vulnerabilities": [
+        "Compromised admin credentials granting full control over system prompt, knowledge base, and safety guardrails",
+        "Privilege escalation allowing lower-privileged users to modify system prompts or disable output filters",
+        "Insecure document upload pipeline enabling injection of poisoned documents into the knowledge base",
+        "Audit trail gaps failing to log who modified system prompts or safety configurations and when"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "user-to-input-validation",
+      "source": "user-interface",
+      "target": "input-validation",
+      "label": "Raw user query",
+      "dataType": "user query",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "input-validation-to-query-processing",
+      "source": "input-validation",
+      "target": "query-processing",
+      "label": "Sanitized query",
+      "dataType": "user query",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "query-processing-to-embedding-model",
+      "source": "query-processing",
+      "target": "embedding-model",
+      "label": "Reformulated query text",
+      "dataType": "user query",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "embedding-model-to-vector-db",
+      "source": "embedding-model",
+      "target": "vector-database",
+      "label": "Query vector for similarity search",
+      "dataType": "embeddings",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "vector-db-to-retrieval-pipeline",
+      "source": "vector-database",
+      "target": "retrieval-pipeline",
+      "label": "Ranked document chunks with scores",
+      "dataType": "retrieved documents",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "knowledge-base-to-vector-db",
+      "source": "knowledge-base",
+      "target": "vector-database",
+      "label": "Document embeddings (batch ingestion)",
+      "dataType": "embeddings",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "knowledge-base-to-retrieval-pipeline",
+      "source": "knowledge-base",
+      "target": "retrieval-pipeline",
+      "label": "Raw document chunks for context assembly",
+      "dataType": "retrieved documents",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "retrieval-pipeline-to-llm",
+      "source": "retrieval-pipeline",
+      "target": "llm-foundation-model",
+      "label": "Assembled context + user query",
+      "dataType": "retrieved documents",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "system-prompt-to-llm",
+      "source": "system-prompt",
+      "target": "llm-foundation-model",
+      "label": "Role instructions and constraints",
+      "dataType": "model response",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "llm-to-output-filter",
+      "source": "llm-foundation-model",
+      "target": "output-filter",
+      "label": "Raw LLM response",
+      "dataType": "model response",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "output-filter-to-response-delivery",
+      "source": "output-filter",
+      "target": "response-delivery",
+      "label": "Validated and filtered response",
+      "dataType": "model response",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "response-delivery-to-user",
+      "source": "response-delivery",
+      "target": "user-interface",
+      "label": "Formatted response with citations",
+      "dataType": "model response",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "user-interface-to-logging",
+      "source": "user-interface",
+      "target": "logging-monitoring",
+      "label": "Session events and user interactions",
+      "dataType": "user query",
+      "encrypted": true,
+      "validated": false
+    },
+    {
+      "id": "input-validation-to-logging",
+      "source": "input-validation",
+      "target": "logging-monitoring",
+      "label": "Blocked requests and rate limit events",
+      "dataType": "user query",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "query-processing-to-logging",
+      "source": "query-processing",
+      "target": "logging-monitoring",
+      "label": "Intent classifications and query reformulations",
+      "dataType": "user query",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "retrieval-pipeline-to-logging",
+      "source": "retrieval-pipeline",
+      "target": "logging-monitoring",
+      "label": "Retrieval metrics and relevance scores",
+      "dataType": "retrieved documents",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "llm-to-logging",
+      "source": "llm-foundation-model",
+      "target": "logging-monitoring",
+      "label": "Token usage, latency, and model metadata",
+      "dataType": "model response",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "output-filter-to-logging",
+      "source": "output-filter",
+      "target": "logging-monitoring",
+      "label": "PII detections, hallucination flags, filter actions",
+      "dataType": "model response",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "admin-to-knowledge-base",
+      "source": "admin-panel",
+      "target": "knowledge-base",
+      "label": "Document uploads and knowledge management",
+      "dataType": "API call",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "admin-to-system-prompt",
+      "source": "admin-panel",
+      "target": "system-prompt",
+      "label": "Prompt updates and constraint modifications",
+      "dataType": "API call",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "admin-to-output-filter",
+      "source": "admin-panel",
+      "target": "output-filter",
+      "label": "Filter rule configuration",
+      "dataType": "API call",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "admin-to-logging",
+      "source": "admin-panel",
+      "target": "logging-monitoring",
+      "label": "Analytics queries and audit log access",
+      "dataType": "API call",
+      "encrypted": true,
+      "validated": true
+    },
+    {
+      "id": "logging-to-admin",
+      "source": "logging-monitoring",
+      "target": "admin-panel",
+      "label": "Dashboard data and anomaly alerts",
+      "dataType": "API call",
+      "encrypted": true,
+      "validated": true
+    }
+  ],
+  "trustBoundaries": [
+    {
+      "id": "external-network-boundary",
+      "label": "External Network Boundary",
+      "nodeIds": [
+        "user-interface",
+        "input-validation"
+      ],
+      "boundaryType": "network"
+    },
+    {
+      "id": "data-classification-boundary",
+      "label": "Data Classification Boundary",
+      "nodeIds": [
+        "knowledge-base",
+        "vector-database"
+      ],
+      "boundaryType": "data-classification"
+    },
+    {
+      "id": "model-privilege-boundary",
+      "label": "Model Privilege Boundary",
+      "nodeIds": [
+        "retrieval-pipeline",
+        "llm-foundation-model",
+        "system-prompt"
+      ],
+      "boundaryType": "privilege"
+    },
+    {
+      "id": "admin-auth-boundary",
+      "label": "Admin Authentication Boundary",
+      "nodeIds": [
+        "admin-panel"
+      ],
+      "boundaryType": "auth"
+    }
+  ],
+  "applicableThreats": [
+    "LLM01",
+    "LLM02",
+    "LLM03",
+    "LLM04",
+    "LLM05",
+    "LLM07",
+    "LLM08",
+    "LLM09",
+    "LLM10"
+  ]
+}

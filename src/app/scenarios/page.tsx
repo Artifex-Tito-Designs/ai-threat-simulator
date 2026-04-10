@@ -27,9 +27,7 @@ export default function ScenariosPage() {
   const { architecture, setArchitecture, setThreats } = useScenarioStore();
   const { loadScenario, reset: resetWalkthrough } = useWalkthroughStore();
   const [activeTab, setActiveTab] = useState('generative');
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(
-    typeof window !== 'undefined' ? window.innerWidth < 1024 : false
-  );
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [selectedNode, setSelectedNode] = useState<ArchitectureNode | null>(null);
   const [loading, setLoading] = useState(true);
   const [walkthroughOpen, setWalkthroughOpen] = useState(false);

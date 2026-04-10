@@ -20,8 +20,7 @@ export default function AssessmentsPage() {
       />
       <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
         <motion.div initial="hidden" animate="visible" variants={fadeInUp}>
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500/15 to-emerald-500/15
-            border border-green-500/20 flex items-center justify-center mb-5 mx-auto">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500/15 to-emerald-500/15 border border-green-500/20 flex items-center justify-center mb-5 mx-auto">
             <ClipboardList className="w-8 h-8 text-green-400" />
           </div>
           <h1 className="text-2xl font-bold text-slate-100 mb-2">Assessments</h1>

@@ -20,8 +20,7 @@ export default function PlaygroundPage() {
       />
       <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
         <motion.div initial="hidden" animate="visible" variants={fadeInUp}>
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/15 to-indigo-500/15
-            border border-blue-500/20 flex items-center justify-center mb-5 mx-auto">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/15 to-indigo-500/15 border border-blue-500/20 flex items-center justify-center mb-5 mx-auto">
             <FlaskConical className="w-8 h-8 text-blue-400" />
           </div>
           <h1 className="text-2xl font-bold text-slate-100 mb-2">Prompt Playground</h1>

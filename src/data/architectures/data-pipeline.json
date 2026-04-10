@@ -318,7 +318,7 @@
       "id": "sources-to-ingestion",
       "source": "source-systems",
       "target": "ingestion-layer",
-      "label": "Raw data feeds (API, CDC, file)",
+      "label": "Raw Data Feeds",
       "dataType": "raw data",
       "encrypted": true,
       "validated": false
@@ -327,7 +327,7 @@
       "id": "ingestion-to-data-lake",
       "source": "ingestion-layer",
       "target": "data-lake",
-      "label": "Landed raw records",
+      "label": "Raw Records",
       "dataType": "raw data",
       "encrypted": true,
       "validated": false
@@ -336,7 +336,7 @@
       "id": "data-lake-to-transformation",
       "source": "data-lake",
       "target": "transformation-layer",
-      "label": "Raw data for cleaning and enrichment",
+      "label": "Raw Data",
       "dataType": "raw data",
       "encrypted": true,
       "validated": false
@@ -345,7 +345,7 @@
       "id": "transformation-to-ai-ml",
       "source": "transformation-layer",
       "target": "ai-ml-enrichment",
-      "label": "Cleaned datasets for ML inference",
+      "label": "Cleaned Datasets",
       "dataType": "processed data",
       "encrypted": true,
       "validated": true
@@ -354,7 +354,7 @@
       "id": "ai-ml-to-warehouse",
       "source": "ai-ml-enrichment",
       "target": "data-warehouse",
-      "label": "Enriched data with AI-generated features",
+      "label": "Enriched Data",
       "dataType": "processed data",
       "encrypted": true,
       "validated": true
@@ -363,7 +363,7 @@
       "id": "transformation-to-warehouse",
       "source": "transformation-layer",
       "target": "data-warehouse",
-      "label": "Transformed analytics-ready tables",
+      "label": "Analytics Tables",
       "dataType": "processed data",
       "encrypted": true,
       "validated": true
@@ -372,7 +372,7 @@
       "id": "warehouse-to-semantic",
       "source": "data-warehouse",
       "target": "semantic-layer",
-      "label": "Table schemas and metric source data",
+      "label": "Schema + Metrics",
       "dataType": "processed data",
       "encrypted": true,
       "validated": true
@@ -381,7 +381,7 @@
       "id": "semantic-to-bi",
       "source": "semantic-layer",
       "target": "bi-dashboard-layer",
-      "label": "Governed metrics and dimensions",
+      "label": "Governed Metrics",
       "dataType": "processed data",
       "encrypted": true,
       "validated": true
@@ -390,7 +390,7 @@
       "id": "semantic-to-nl-query",
       "source": "semantic-layer",
       "target": "nl-query-interface",
-      "label": "Metric definitions and data catalog",
+      "label": "Data Catalog",
       "dataType": "processed data",
       "encrypted": true,
       "validated": true
@@ -399,7 +399,7 @@
       "id": "warehouse-to-nl-query",
       "source": "data-warehouse",
       "target": "nl-query-interface",
-      "label": "SQL query execution and results",
+      "label": "Query Results",
       "dataType": "query results",
       "encrypted": true,
       "validated": true
@@ -408,7 +408,7 @@
       "id": "warehouse-to-report-gen",
       "source": "data-warehouse",
       "target": "report-generator",
-      "label": "Aggregated data for scheduled reports",
+      "label": "Report Data",
       "dataType": "query results",
       "encrypted": true,
       "validated": true
@@ -417,7 +417,7 @@
       "id": "ai-ml-to-report-gen",
       "source": "ai-ml-enrichment",
       "target": "report-generator",
-      "label": "Anomaly summaries and AI narratives",
+      "label": "AI Narratives",
       "dataType": "model response",
       "encrypted": true,
       "validated": true
@@ -426,7 +426,7 @@
       "id": "access-control-to-warehouse",
       "source": "access-control",
       "target": "data-warehouse",
-      "label": "Row/column security policies",
+      "label": "Security Policies",
       "dataType": "access policy",
       "encrypted": true,
       "validated": true
@@ -435,7 +435,7 @@
       "id": "access-control-to-bi",
       "source": "access-control",
       "target": "bi-dashboard-layer",
-      "label": "User role and dashboard permissions",
+      "label": "Role Permissions",
       "dataType": "access policy",
       "encrypted": true,
       "validated": true
@@ -444,7 +444,7 @@
       "id": "access-control-to-nl-query",
       "source": "access-control",
       "target": "nl-query-interface",
-      "label": "Query scope restrictions per user role",
+      "label": "Query Restrictions",
       "dataType": "access policy",
       "encrypted": true,
       "validated": true
@@ -453,7 +453,7 @@
       "id": "dq-monitor-to-transformation",
       "source": "data-quality-monitor",
       "target": "transformation-layer",
-      "label": "Quality gate pass/fail signals",
+      "label": "Quality Signals",
       "dataType": "quality signal",
       "encrypted": true,
       "validated": true
@@ -462,7 +462,7 @@
       "id": "dq-monitor-to-ingestion",
       "source": "data-quality-monitor",
       "target": "ingestion-layer",
-      "label": "Source data freshness and volume alerts",
+      "label": "Freshness Alerts",
       "dataType": "quality signal",
       "encrypted": true,
       "validated": true
@@ -471,7 +471,7 @@
       "id": "ingestion-to-dq-monitor",
       "source": "ingestion-layer",
       "target": "data-quality-monitor",
-      "label": "Ingestion job metrics and schema snapshots",
+      "label": "Ingestion Metrics",
       "dataType": "telemetry",
       "encrypted": true,
       "validated": true
@@ -480,7 +480,7 @@
       "id": "transformation-to-dq-monitor",
       "source": "transformation-layer",
       "target": "data-quality-monitor",
-      "label": "Row counts, null rates, distribution stats",
+      "label": "Quality Stats",
       "dataType": "telemetry",
       "encrypted": true,
       "validated": true
@@ -489,7 +489,7 @@
       "id": "warehouse-to-dq-monitor",
       "source": "data-warehouse",
       "target": "data-quality-monitor",
-      "label": "Table freshness and query performance metrics",
+      "label": "Performance Metrics",
       "dataType": "telemetry",
       "encrypted": true,
       "validated": true

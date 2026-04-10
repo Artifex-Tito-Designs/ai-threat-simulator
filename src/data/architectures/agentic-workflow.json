@@ -356,7 +356,7 @@
       "id": "user-to-orchestrator",
       "source": "user-trigger",
       "target": "agent-orchestrator",
-      "label": "Task request with instructions",
+      "label": "Task Request",
       "dataType": "user query",
       "encrypted": true,
       "validated": false
@@ -365,7 +365,7 @@
       "id": "orchestrator-to-planning",
       "source": "agent-orchestrator",
       "target": "planning-module",
-      "label": "Task objective for decomposition",
+      "label": "Task Objective",
       "dataType": "user query",
       "encrypted": true,
       "validated": true
@@ -374,7 +374,7 @@
       "id": "planning-to-orchestrator",
       "source": "planning-module",
       "target": "agent-orchestrator",
-      "label": "Execution plan with ordered subtasks",
+      "label": "Execution Plan",
       "dataType": "model response",
       "encrypted": true,
       "validated": true
@@ -383,7 +383,7 @@
       "id": "orchestrator-to-llm",
       "source": "agent-orchestrator",
       "target": "llm-foundation-model",
-      "label": "Context + task state for next action decision",
+      "label": "Context + Task State",
       "dataType": "user query",
       "encrypted": true,
       "validated": true
@@ -392,7 +392,7 @@
       "id": "llm-to-orchestrator",
       "source": "llm-foundation-model",
       "target": "agent-orchestrator",
-      "label": "Reasoning trace and tool call selection",
+      "label": "Reasoning + Tool Call",
       "dataType": "model response",
       "encrypted": true,
       "validated": false
@@ -401,7 +401,7 @@
       "id": "system-prompt-to-llm",
       "source": "system-prompt",
       "target": "llm-foundation-model",
-      "label": "Agent role, constraints, and permitted actions",
+      "label": "Agent Instructions",
       "dataType": "model response",
       "encrypted": true,
       "validated": true
@@ -410,7 +410,7 @@
       "id": "orchestrator-to-memory",
       "source": "agent-orchestrator",
       "target": "memory-state-store",
-      "label": "Task state updates and intermediate results",
+      "label": "State Updates",
       "dataType": "API call",
       "encrypted": true,
       "validated": true
@@ -419,7 +419,7 @@
       "id": "memory-to-orchestrator",
       "source": "memory-state-store",
       "target": "agent-orchestrator",
-      "label": "Conversation history and prior task context",
+      "label": "Task Context",
       "dataType": "retrieved documents",
       "encrypted": true,
       "validated": false
@@ -428,7 +428,7 @@
       "id": "orchestrator-to-tool-registry",
       "source": "agent-orchestrator",
       "target": "tool-registry",
-      "label": "Available tool lookup for current subtask",
+      "label": "Tool Lookup",
       "dataType": "API call",
       "encrypted": true,
       "validated": true
@@ -437,7 +437,7 @@
       "id": "tool-registry-to-orchestrator",
       "source": "tool-registry",
       "target": "agent-orchestrator",
-      "label": "Tool schemas and parameter definitions",
+      "label": "Tool Schemas",
       "dataType": "API call",
       "encrypted": true,
       "validated": true
@@ -446,7 +446,7 @@
       "id": "orchestrator-to-output-validator",
       "source": "agent-orchestrator",
       "target": "output-validator",
-      "label": "Proposed tool call for policy validation",
+      "label": "Proposed Tool Call",
       "dataType": "API call",
       "encrypted": true,
       "validated": false
@@ -455,7 +455,7 @@
       "id": "output-validator-to-hitl",
       "source": "output-validator",
       "target": "human-in-the-loop",
-      "label": "High-risk action requiring human approval",
+      "label": "Approval Request",
       "dataType": "API call",
       "encrypted": true,
       "validated": true
@@ -464,7 +464,7 @@
       "id": "hitl-to-orchestrator",
       "source": "human-in-the-loop",
       "target": "agent-orchestrator",
-      "label": "Approval decision with optional modifications",
+      "label": "Approval Decision",
       "dataType": "user query",
       "encrypted": true,
       "validated": true
@@ -473,7 +473,7 @@
       "id": "output-validator-to-executor",
       "source": "output-validator",
       "target": "tool-executor",
-      "label": "Validated tool call cleared for execution",
+      "label": "Validated Tool Call",
       "dataType": "API call",
       "encrypted": true,
       "validated": true
@@ -482,7 +482,7 @@
       "id": "executor-to-external-apis",
       "source": "tool-executor",
       "target": "external-apis",
-      "label": "Authenticated API calls (TMS, booking, carrier, payment)",
+      "label": "API Calls",
       "dataType": "API call",
       "encrypted": true,
       "validated": true
@@ -491,7 +491,7 @@
       "id": "external-apis-to-executor",
       "source": "external-apis",
       "target": "tool-executor",
-      "label": "API responses (confirmations, rate quotes, statuses)",
+      "label": "API Responses",
       "dataType": "API call",
       "encrypted": true,
       "validated": false
@@ -500,7 +500,7 @@
       "id": "executor-to-orchestrator",
       "source": "tool-executor",
       "target": "agent-orchestrator",
-      "label": "Tool execution results for next step evaluation",
+      "label": "Execution Results",
       "dataType": "API call",
       "encrypted": true,
       "validated": false
@@ -509,7 +509,7 @@
       "id": "executor-to-error-handler",
       "source": "tool-executor",
       "target": "error-handler",
-      "label": "Tool call failures and timeout events",
+      "label": "Failure Events",
       "dataType": "API call",
       "encrypted": true,
       "validated": false
@@ -518,7 +518,7 @@
       "id": "error-handler-to-orchestrator",
       "source": "error-handler",
       "target": "agent-orchestrator",
-      "label": "Recovery action or escalation signal",
+      "label": "Recovery Signal",
       "dataType": "API call",
       "encrypted": true,
       "validated": true
@@ -527,7 +527,7 @@
       "id": "orchestrator-to-audit-logger",
       "source": "agent-orchestrator",
       "target": "audit-logger",
-      "label": "All decisions, tool calls, and state transitions",
+      "label": "Decision Logs",
       "dataType": "API call",
       "encrypted": true,
       "validated": true
@@ -536,7 +536,7 @@
       "id": "output-validator-to-audit-logger",
       "source": "output-validator",
       "target": "audit-logger",
-      "label": "Policy evaluations, approvals, and blocked actions",
+      "label": "Policy Evaluations",
       "dataType": "API call",
       "encrypted": true,
       "validated": true
@@ -545,7 +545,7 @@
       "id": "hitl-to-audit-logger",
       "source": "human-in-the-loop",
       "target": "audit-logger",
-      "label": "Human approval decisions and review timestamps",
+      "label": "Approval Logs",
       "dataType": "user query",
       "encrypted": true,
       "validated": true
@@ -554,7 +554,7 @@
       "id": "executor-to-audit-logger",
       "source": "tool-executor",
       "target": "audit-logger",
-      "label": "API call logs with parameters and response codes",
+      "label": "API Call Logs",
       "dataType": "API call",
       "encrypted": true,
       "validated": true

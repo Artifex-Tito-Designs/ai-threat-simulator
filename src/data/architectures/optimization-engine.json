@@ -292,7 +292,7 @@
       "id": "rules-to-solver",
       "source": "business-rules-engine",
       "target": "constraint-solver",
-      "label": "Hard constraints and feasibility rules",
+      "label": "Constraint Rules",
       "dataType": "configuration",
       "encrypted": true,
       "validated": true
@@ -301,7 +301,7 @@
       "id": "objective-to-solver",
       "source": "objective-function",
       "target": "constraint-solver",
-      "label": "Optimization criteria and weights",
+      "label": "Optimization Weights",
       "dataType": "configuration",
       "encrypted": true,
       "validated": true
@@ -310,7 +310,7 @@
       "id": "feeds-to-solver",
       "source": "realtime-data-feeds",
       "target": "constraint-solver",
-      "label": "Current conditions (GPS, weather, traffic, rates)",
+      "label": "Live Conditions",
       "dataType": "external data",
       "encrypted": true,
       "validated": false
@@ -319,7 +319,7 @@
       "id": "feeds-to-ml-model",
       "source": "realtime-data-feeds",
       "target": "ml-scoring-model",
-      "label": "Real-time features for prediction",
+      "label": "Real-Time Features",
       "dataType": "external data",
       "encrypted": true,
       "validated": false
@@ -328,7 +328,7 @@
       "id": "historical-to-ml-model",
       "source": "historical-data",
       "target": "ml-scoring-model",
-      "label": "Training data and outcome patterns",
+      "label": "Training Data",
       "dataType": "training data",
       "encrypted": true,
       "validated": true
@@ -337,7 +337,7 @@
       "id": "solver-to-evaluator",
       "source": "constraint-solver",
       "target": "solution-evaluator",
-      "label": "Candidate solutions with feasibility scores",
+      "label": "Candidate Solutions",
       "dataType": "optimization results",
       "encrypted": true,
       "validated": true
@@ -346,7 +346,7 @@
       "id": "ml-model-to-evaluator",
       "source": "ml-scoring-model",
       "target": "solution-evaluator",
-      "label": "Outcome predictions and confidence scores",
+      "label": "Outcome Predictions",
       "dataType": "model response",
       "encrypted": true,
       "validated": true
@@ -355,7 +355,7 @@
       "id": "evaluator-to-api",
       "source": "solution-evaluator",
       "target": "decision-api",
-      "label": "Ranked recommendations with explanations",
+      "label": "Ranked Recommendations",
       "dataType": "optimization results",
       "encrypted": true,
       "validated": true
@@ -364,7 +364,7 @@
       "id": "api-to-dashboard",
       "source": "decision-api",
       "target": "operations-dashboard",
-      "label": "Recommendations for human review",
+      "label": "Review Recommendations",
       "dataType": "API call",
       "encrypted": true,
       "validated": true
@@ -373,7 +373,7 @@
       "id": "api-to-execution",
       "source": "decision-api",
       "target": "execution-system",
-      "label": "Approved recommendations for execution",
+      "label": "Approved Actions",
       "dataType": "API call",
       "encrypted": true,
       "validated": true
@@ -382,7 +382,7 @@
       "id": "dashboard-to-execution",
       "source": "operations-dashboard",
       "target": "execution-system",
-      "label": "Human-approved or overridden decisions",
+      "label": "Override Decisions",
       "dataType": "user input",
       "encrypted": true,
       "validated": false
@@ -391,7 +391,7 @@
       "id": "execution-to-monitor",
       "source": "execution-system",
       "target": "performance-monitor",
-      "label": "Execution outcomes and status updates",
+      "label": "Execution Outcomes",
       "dataType": "telemetry",
       "encrypted": true,
       "validated": true
@@ -400,7 +400,7 @@
       "id": "evaluator-to-monitor",
       "source": "solution-evaluator",
       "target": "performance-monitor",
-      "label": "Predicted outcomes for accuracy tracking",
+      "label": "Predicted Outcomes",
       "dataType": "optimization results",
       "encrypted": true,
       "validated": true
@@ -409,7 +409,7 @@
       "id": "monitor-to-historical",
       "source": "performance-monitor",
       "target": "historical-data",
-      "label": "Decision-outcome pairs for model improvement",
+      "label": "Outcome Pairs",
       "dataType": "telemetry",
       "encrypted": true,
       "validated": true
@@ -418,7 +418,7 @@
       "id": "monitor-to-ml-model",
       "source": "performance-monitor",
       "target": "ml-scoring-model",
-      "label": "Drift alerts and retraining triggers",
+      "label": "Drift Alerts",
       "dataType": "telemetry",
       "encrypted": true,
       "validated": true
@@ -427,7 +427,7 @@
       "id": "dashboard-to-rules",
       "source": "operations-dashboard",
       "target": "business-rules-engine",
-      "label": "Constraint updates and rule overrides",
+      "label": "Rule Updates",
       "dataType": "user input",
       "encrypted": true,
       "validated": false
@@ -436,7 +436,7 @@
       "id": "dashboard-to-objective",
       "source": "operations-dashboard",
       "target": "objective-function",
-      "label": "Priority weight adjustments",
+      "label": "Weight Adjustments",
       "dataType": "user input",
       "encrypted": true,
       "validated": false

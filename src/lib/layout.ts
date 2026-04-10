@@ -20,11 +20,11 @@ export const TIER_CONFIG: {
 
 const NODE_WIDTH = 220;
 const NODE_HEIGHT = 80;
-const HORIZONTAL_GAP = 60;
-const VERTICAL_GAP = 120;
+const HORIZONTAL_GAP = 80;
+const VERTICAL_GAP = 200;
 const TIER_PADDING_TOP = 45;
 const TIER_LABEL_WIDTH = 160;
-const LEFT_OFFSET = TIER_LABEL_WIDTH + 30;
+const LEFT_OFFSET = TIER_LABEL_WIDTH + 40;
 
 /**
  * Compute positions for nodes arranged in horizontal tier rows.

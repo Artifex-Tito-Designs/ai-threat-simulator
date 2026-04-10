@@ -351,7 +351,7 @@
       "id": "user-to-input-validation",
       "source": "user-interface",
       "target": "input-validation",
-      "label": "Raw user query",
+      "label": "User Query",
       "dataType": "user query",
       "encrypted": true,
       "validated": false
@@ -360,7 +360,7 @@
       "id": "input-validation-to-query-processing",
       "source": "input-validation",
       "target": "query-processing",
-      "label": "Sanitized query",
+      "label": "Sanitized Query",
       "dataType": "user query",
       "encrypted": true,
       "validated": true
@@ -369,7 +369,7 @@
       "id": "query-processing-to-embedding-model",
       "source": "query-processing",
       "target": "embedding-model",
-      "label": "Reformulated query text",
+      "label": "Reformulated Query",
       "dataType": "user query",
       "encrypted": true,
       "validated": true
@@ -378,7 +378,7 @@
       "id": "embedding-model-to-vector-db",
       "source": "embedding-model",
       "target": "vector-database",
-      "label": "Query vector for similarity search",
+      "label": "Query Vector",
       "dataType": "embeddings",
       "encrypted": true,
       "validated": false
@@ -387,7 +387,7 @@
       "id": "vector-db-to-retrieval-pipeline",
       "source": "vector-database",
       "target": "retrieval-pipeline",
-      "label": "Ranked document chunks with scores",
+      "label": "Ranked Chunks",
       "dataType": "retrieved documents",
       "encrypted": true,
       "validated": false
@@ -396,7 +396,7 @@
       "id": "knowledge-base-to-vector-db",
       "source": "knowledge-base",
       "target": "vector-database",
-      "label": "Document embeddings (batch ingestion)",
+      "label": "Doc Embeddings",
       "dataType": "embeddings",
       "encrypted": true,
       "validated": false
@@ -405,7 +405,7 @@
       "id": "knowledge-base-to-retrieval-pipeline",
       "source": "knowledge-base",
       "target": "retrieval-pipeline",
-      "label": "Raw document chunks for context assembly",
+      "label": "Raw Chunks",
       "dataType": "retrieved documents",
       "encrypted": true,
       "validated": false
@@ -414,7 +414,7 @@
       "id": "retrieval-pipeline-to-llm",
       "source": "retrieval-pipeline",
       "target": "llm-foundation-model",
-      "label": "Assembled context + user query",
+      "label": "Context + Query",
       "dataType": "retrieved documents",
       "encrypted": true,
       "validated": false
@@ -423,7 +423,7 @@
       "id": "system-prompt-to-llm",
       "source": "system-prompt",
       "target": "llm-foundation-model",
-      "label": "Role instructions and constraints",
+      "label": "System Instructions",
       "dataType": "model response",
       "encrypted": true,
       "validated": true
@@ -432,7 +432,7 @@
       "id": "llm-to-output-filter",
       "source": "llm-foundation-model",
       "target": "output-filter",
-      "label": "Raw LLM response",
+      "label": "LLM Response",
       "dataType": "model response",
       "encrypted": true,
       "validated": false
@@ -441,7 +441,7 @@
       "id": "output-filter-to-response-delivery",
       "source": "output-filter",
       "target": "response-delivery",
-      "label": "Validated and filtered response",
+      "label": "Filtered Response",
       "dataType": "model response",
       "encrypted": true,
       "validated": true
@@ -450,7 +450,7 @@
       "id": "response-delivery-to-user",
       "source": "response-delivery",
       "target": "user-interface",
-      "label": "Formatted response with citations",
+      "label": "Formatted Response",
       "dataType": "model response",
       "encrypted": true,
       "validated": true
@@ -459,7 +459,7 @@
       "id": "user-interface-to-logging",
       "source": "user-interface",
       "target": "logging-monitoring",
-      "label": "Session events and user interactions",
+      "label": "Session Events",
       "dataType": "user query",
       "encrypted": true,
       "validated": false
@@ -468,7 +468,7 @@
       "id": "input-validation-to-logging",
       "source": "input-validation",
       "target": "logging-monitoring",
-      "label": "Blocked requests and rate limit events",
+      "label": "Rate Limit Events",
       "dataType": "user query",
       "encrypted": true,
       "validated": true
@@ -477,7 +477,7 @@
       "id": "query-processing-to-logging",
       "source": "query-processing",
       "target": "logging-monitoring",
-      "label": "Intent classifications and query reformulations",
+      "label": "Intent Data",
       "dataType": "user query",
       "encrypted": true,
       "validated": true
@@ -486,7 +486,7 @@
       "id": "retrieval-pipeline-to-logging",
       "source": "retrieval-pipeline",
       "target": "logging-monitoring",
-      "label": "Retrieval metrics and relevance scores",
+      "label": "Retrieval Metrics",
       "dataType": "retrieved documents",
       "encrypted": true,
       "validated": true
@@ -495,7 +495,7 @@
       "id": "llm-to-logging",
       "source": "llm-foundation-model",
       "target": "logging-monitoring",
-      "label": "Token usage, latency, and model metadata",
+      "label": "Model Metrics",
       "dataType": "model response",
       "encrypted": true,
       "validated": true
@@ -504,7 +504,7 @@
       "id": "output-filter-to-logging",
       "source": "output-filter",
       "target": "logging-monitoring",
-      "label": "PII detections, hallucination flags, filter actions",
+      "label": "Filter Actions",
       "dataType": "model response",
       "encrypted": true,
       "validated": true
@@ -513,7 +513,7 @@
       "id": "admin-to-knowledge-base",
       "source": "admin-panel",
       "target": "knowledge-base",
-      "label": "Document uploads and knowledge management",
+      "label": "Doc Uploads",
       "dataType": "API call",
       "encrypted": true,
       "validated": true
@@ -522,7 +522,7 @@
       "id": "admin-to-system-prompt",
       "source": "admin-panel",
       "target": "system-prompt",
-      "label": "Prompt updates and constraint modifications",
+      "label": "Prompt Updates",
       "dataType": "API call",
       "encrypted": true,
       "validated": true
@@ -531,7 +531,7 @@
       "id": "admin-to-output-filter",
       "source": "admin-panel",
       "target": "output-filter",
-      "label": "Filter rule configuration",
+      "label": "Filter Config",
       "dataType": "API call",
       "encrypted": true,
       "validated": true
@@ -540,7 +540,7 @@
       "id": "admin-to-logging",
       "source": "admin-panel",
       "target": "logging-monitoring",
-      "label": "Analytics queries and audit log access",
+      "label": "Audit Queries",
       "dataType": "API call",
       "encrypted": true,
       "validated": true
@@ -549,7 +549,7 @@
       "id": "logging-to-admin",
       "source": "logging-monitoring",
       "target": "admin-panel",
-      "label": "Dashboard data and anomaly alerts",
+      "label": "Dashboard Data",
       "dataType": "API call",
       "encrypted": true,
       "validated": true

@@ -327,7 +327,7 @@
       "id": "sources-to-ingestion",
       "source": "data-sources",
       "target": "data-ingestion",
-      "label": "Raw data feeds (batch and streaming)",
+      "label": "Raw Data Feeds",
       "dataType": "raw data",
       "encrypted": true,
       "validated": false
@@ -336,7 +336,7 @@
       "id": "ingestion-to-warehouse",
       "source": "data-ingestion",
       "target": "data-warehouse",
-      "label": "Cleaned and validated records",
+      "label": "Validated Records",
       "dataType": "structured data",
       "encrypted": true,
       "validated": true
@@ -345,7 +345,7 @@
       "id": "ingestion-to-feature-store",
       "source": "data-ingestion",
       "target": "feature-store",
-      "label": "Real-time feature updates",
+      "label": "Feature Updates",
       "dataType": "feature values",
       "encrypted": true,
       "validated": true
@@ -354,7 +354,7 @@
       "id": "warehouse-to-feature-store",
       "source": "data-warehouse",
       "target": "feature-store",
-      "label": "Historical aggregations and batch features",
+      "label": "Batch Features",
       "dataType": "feature values",
       "encrypted": true,
       "validated": true
@@ -363,7 +363,7 @@
       "id": "warehouse-to-training",
       "source": "data-warehouse",
       "target": "training-pipeline",
-      "label": "Training datasets with labels",
+      "label": "Training Data",
       "dataType": "training data",
       "encrypted": true,
       "validated": true
@@ -372,7 +372,7 @@
       "id": "feature-store-to-training",
       "source": "feature-store",
       "target": "training-pipeline",
-      "label": "Feature vectors for training",
+      "label": "Training Features",
       "dataType": "feature values",
       "encrypted": true,
       "validated": true
@@ -381,7 +381,7 @@
       "id": "feature-store-to-serving",
       "source": "feature-store",
       "target": "model-serving",
-      "label": "Real-time feature vectors for inference",
+      "label": "Inference Features",
       "dataType": "feature values",
       "encrypted": true,
       "validated": true
@@ -390,7 +390,7 @@
       "id": "training-to-experiment-tracker",
       "source": "training-pipeline",
       "target": "experiment-tracker",
-      "label": "Run metrics, parameters, and artifacts",
+      "label": "Experiment Metadata",
       "dataType": "experiment metadata",
       "encrypted": true,
       "validated": true
@@ -399,7 +399,7 @@
       "id": "training-to-registry",
       "source": "training-pipeline",
       "target": "model-registry",
-      "label": "Trained model artifacts for registration",
+      "label": "Model Artifacts",
       "dataType": "model artifact",
       "encrypted": true,
       "validated": true
@@ -408,7 +408,7 @@
       "id": "registry-to-serving",
       "source": "model-registry",
       "target": "model-serving",
-      "label": "Promoted model artifacts and serving config",
+      "label": "Serving Config",
       "dataType": "model artifact",
       "encrypted": true,
       "validated": true
@@ -417,7 +417,7 @@
       "id": "serving-to-prediction-api",
       "source": "model-serving",
       "target": "prediction-api",
-      "label": "Raw predictions and confidence scores",
+      "label": "Raw Predictions",
       "dataType": "predictions",
       "encrypted": true,
       "validated": false
@@ -426,7 +426,7 @@
       "id": "prediction-api-to-business",
       "source": "prediction-api",
       "target": "business-applications",
-      "label": "Formatted predictions and explanations",
+      "label": "Formatted Predictions",
       "dataType": "predictions",
       "encrypted": true,
       "validated": true
@@ -435,7 +435,7 @@
       "id": "serving-to-monitor",
       "source": "model-serving",
       "target": "model-monitor",
-      "label": "Prediction logs and latency metrics",
+      "label": "Prediction Telemetry",
       "dataType": "telemetry",
       "encrypted": true,
       "validated": true
@@ -444,7 +444,7 @@
       "id": "business-to-feedback",
       "source": "business-applications",
       "target": "ground-truth-feedback",
-      "label": "Actual outcomes and user overrides",
+      "label": "Actual Outcomes",
       "dataType": "ground truth",
       "encrypted": true,
       "validated": false
@@ -453,7 +453,7 @@
       "id": "feedback-to-monitor",
       "source": "ground-truth-feedback",
       "target": "model-monitor",
-      "label": "Prediction accuracy metrics",
+      "label": "Accuracy Metrics",
       "dataType": "evaluation metrics",
       "encrypted": true,
       "validated": true
@@ -462,7 +462,7 @@
       "id": "feedback-to-warehouse",
       "source": "ground-truth-feedback",
       "target": "data-warehouse",
-      "label": "Labeled outcomes for retraining datasets",
+      "label": "Labeled Outcomes",
       "dataType": "labeled data",
       "encrypted": true,
       "validated": true
@@ -471,7 +471,7 @@
       "id": "monitor-to-training",
       "source": "model-monitor",
       "target": "training-pipeline",
-      "label": "Retraining triggers on drift detection",
+      "label": "Retraining Triggers",
       "dataType": "control signal",
       "encrypted": true,
       "validated": true
@@ -480,7 +480,7 @@
       "id": "monitor-to-registry",
       "source": "model-monitor",
       "target": "model-registry",
-      "label": "Model health status and rollback signals",
+      "label": "Health Status",
       "dataType": "control signal",
       "encrypted": true,
       "validated": true
@@ -489,7 +489,7 @@
       "id": "experiment-tracker-to-registry",
       "source": "experiment-tracker",
       "target": "model-registry",
-      "label": "Model promotion recommendations",
+      "label": "Promotion Recommendations",
       "dataType": "experiment metadata",
       "encrypted": true,
       "validated": true

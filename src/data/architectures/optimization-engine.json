@@ -24,6 +24,7 @@
         "x": 360,
         "y": 315
       },
+      "tier": "application",
       "dataFlows": [
         "constraint sets",
         "SLA parameters",
@@ -42,11 +43,12 @@
       "id": "objective-function",
       "type": "component",
       "label": "Objective Function",
-      "description": "Defines the mathematical optimization goal â€” typically a weighted combination of cost minimization, service level maximization, asset utilization, and carbon footprint reduction. Weights are tuned by operations leadership and encode business priorities. The objective function translates strategic goals into a computable scoring formula that the constraint solver maximizes or minimizes.",
+      "description": "Defines the mathematical optimization goal \u2014 typically a weighted combination of cost minimization, service level maximization, asset utilization, and carbon footprint reduction. Weights are tuned by operations leadership and encode business priorities. The objective function translates strategic goals into a computable scoring formula that the constraint solver maximizes or minimizes.",
       "position": {
         "x": 360,
         "y": 765
       },
+      "tier": "application",
       "dataFlows": [
         "cost weights",
         "service level targets",
@@ -70,6 +72,7 @@
         "x": 360,
         "y": 1215
       },
+      "tier": "client",
       "dataFlows": [
         "GPS coordinates",
         "weather forecasts",
@@ -91,11 +94,12 @@
       "id": "historical-data",
       "type": "datastore",
       "label": "Historical Data Store",
-      "description": "Repository of past optimization decisions and their real-world outcomes â€” actual transit times vs predicted, realized costs vs estimated, service level hits and misses, carrier performance records, and seasonal demand patterns. Used by the ML scoring model for training and by the performance monitor for accuracy tracking. Contains years of operational intelligence.",
+      "description": "Repository of past optimization decisions and their real-world outcomes \u2014 actual transit times vs predicted, realized costs vs estimated, service level hits and misses, carrier performance records, and seasonal demand patterns. Used by the ML scoring model for training and by the performance monitor for accuracy tracking. Contains years of operational intelligence.",
       "position": {
         "x": 960,
         "y": 1440
       },
+      "tier": "data",
       "dataFlows": [
         "past decisions",
         "outcome records",
@@ -120,6 +124,7 @@
         "x": 1320,
         "y": 540
       },
+      "tier": "application",
       "dataFlows": [
         "candidate solutions",
         "feasibility reports",
@@ -143,6 +148,7 @@
         "x": 1320,
         "y": 990
       },
+      "tier": "application",
       "dataFlows": [
         "outcome predictions",
         "confidence scores",
@@ -167,6 +173,7 @@
         "x": 1920,
         "y": 765
       },
+      "tier": "application",
       "dataFlows": [
         "ranked recommendations",
         "evaluation reports",
@@ -185,11 +192,12 @@
       "id": "decision-api",
       "type": "component",
       "label": "Decision API",
-      "description": "RESTful or gRPC API layer that serves optimization recommendations to consuming business systems â€” TMS, WMS, pricing engines, booking platforms, and dispatch systems. Handles request authentication, rate limiting, response formatting, and SLA enforcement. Provides both synchronous (real-time pricing) and asynchronous (batch route planning) recommendation endpoints.",
+      "description": "RESTful or gRPC API layer that serves optimization recommendations to consuming business systems \u2014 TMS, WMS, pricing engines, booking platforms, and dispatch systems. Handles request authentication, rate limiting, response formatting, and SLA enforcement. Provides both synchronous (real-time pricing) and asynchronous (batch route planning) recommendation endpoints.",
       "position": {
         "x": 2400,
         "y": 540
       },
+      "tier": "presentation",
       "dataFlows": [
         "API responses",
         "recommendation payloads",
@@ -213,6 +221,7 @@
         "x": 2400,
         "y": 1103
       },
+      "tier": "client",
       "dataFlows": [
         "visual recommendations",
         "override inputs",
@@ -231,11 +240,12 @@
       "id": "execution-system",
       "type": "component",
       "label": "Execution System",
-      "description": "Applies approved optimization decisions by triggering downstream actions â€” booking carriers, dispatching vehicles, updating pricing in quoting systems, assigning warehouse slots, and generating load plans. Bridges the gap between recommendation and action. Implements rollback capabilities for decisions that fail during execution.",
+      "description": "Applies approved optimization decisions by triggering downstream actions \u2014 booking carriers, dispatching vehicles, updating pricing in quoting systems, assigning warehouse slots, and generating load plans. Bridges the gap between recommendation and action. Implements rollback capabilities for decisions that fail during execution.",
       "position": {
         "x": 2760,
         "y": 765
       },
+      "tier": "application",
       "dataFlows": [
         "booking confirmations",
         "dispatch orders",
@@ -255,11 +265,12 @@
       "id": "performance-monitor",
       "type": "component",
       "label": "Performance Monitor",
-      "description": "Continuously tracks how optimization recommendations compare to actual outcomes â€” predicted vs actual transit times, estimated vs realized costs, planned vs actual service levels. Detects model drift, data quality degradation, and systematic biases. Generates alerts when recommendation accuracy drops below thresholds and feeds performance data back to model retraining pipelines.",
+      "description": "Continuously tracks how optimization recommendations compare to actual outcomes \u2014 predicted vs actual transit times, estimated vs realized costs, planned vs actual service levels. Detects model drift, data quality degradation, and systematic biases. Generates alerts when recommendation accuracy drops below thresholds and feeds performance data back to model retraining pipelines.",
       "position": {
         "x": 1560,
         "y": 1665
       },
+      "tier": "operations",
       "dataFlows": [
         "accuracy metrics",
         "drift alerts",

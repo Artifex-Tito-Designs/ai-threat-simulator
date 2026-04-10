@@ -34,23 +34,24 @@ function ComponentNodeInner({ data }: any) {
     : isDefended ? '#22C55E'
     : colors.border;
 
-  const bgColor = isCompromised ? 'rgba(69, 10, 10, 0.85)'
-    : isTargeted ? 'rgba(66, 32, 6, 0.85)'
-    : isDefended ? 'rgba(5, 46, 22, 0.85)'
-    : `${colors.bg}CC`;
+  const bgColor = isCompromised ? 'rgba(69, 10, 10, 0.9)'
+    : isTargeted ? 'rgba(66, 32, 6, 0.9)'
+    : isDefended ? 'rgba(5, 46, 22, 0.9)'
+    : `${colors.bg}E6`;
 
   return (
     <div
-      className={`component-node relative rounded-xl border-2 px-6 py-5 min-w-[280px] max-w-[320px] cursor-pointer
+      className={`component-node relative rounded-xl border-2 px-4 py-3 cursor-pointer
         shadow-lg shadow-black/40
-        transition-all duration-200 hover:scale-[1.04] hover:shadow-xl hover:shadow-black/50
-        focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 focus-visible:ring-offset-[#0F172A]
+        transition-all duration-200 hover:scale-[1.03] hover:shadow-xl hover:shadow-black/50
+        focus-visible:ring-2 focus-visible:ring-blue-500
         ${stateClass} ${opacity}`}
       style={{
         borderColor,
         backgroundColor: bgColor,
         backdropFilter: 'blur(12px) saturate(150%)',
         WebkitBackdropFilter: 'blur(12px) saturate(150%)',
+        width: 220,
       }}
       onClick={() => d.onClick?.()}
       role="button"
@@ -58,85 +59,58 @@ function ComponentNodeInner({ data }: any) {
       aria-label={`${d.label} - ${d.trustLevel} - ${vulnCount} vulnerabilities`}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') d.onClick?.(); }}
     >
-      {/* Inner glow overlay for active states */}
+      {/* Inner glow for active states */}
       {(isCompromised || isTargeted || isDefended) && (
         <div
           className="absolute inset-0 rounded-xl pointer-events-none"
-          style={{
-            background: `radial-gradient(ellipse at center, ${borderColor}10 0%, transparent 70%)`,
-          }}
+          style={{ background: `radial-gradient(ellipse at center, ${borderColor}10 0%, transparent 70%)` }}
         />
       )}
 
       {/* Handles */}
       <Handle
         type="target"
-        position={Position.Left}
-        className="!w-2.5 !h-2.5 !rounded-full !border-2 !shadow-sm"
-        style={{
-          backgroundColor: '#0F172A',
-          borderColor: colors.border,
-          boxShadow: `0 0 4px ${colors.border}40`,
-        }}
+        position={Position.Top}
+        className="!w-3 !h-3 !rounded-full !border-2 !-top-1.5"
+        style={{ backgroundColor: '#0F172A', borderColor: colors.border, boxShadow: `0 0 4px ${colors.border}40` }}
       />
       <Handle
         type="source"
-        position={Position.Right}
-        className="!w-2.5 !h-2.5 !rounded-full !border-2 !shadow-sm"
-        style={{
-          backgroundColor: '#0F172A',
-          borderColor: colors.border,
-          boxShadow: `0 0 4px ${colors.border}40`,
-        }}
+        position={Position.Bottom}
+        className="!w-3 !h-3 !rounded-full !border-2 !-bottom-1.5"
+        style={{ backgroundColor: '#0F172A', borderColor: colors.border, boxShadow: `0 0 4px ${colors.border}40` }}
       />
 
-      {/* Node type icon + label */}
-      <div className="relative flex items-center gap-3 mb-3">
+      {/* Icon + Name */}
+      <div className="relative flex items-center gap-3">
         <div
-          className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
-          style={{
-            backgroundColor: `${colors.border}15`,
-            boxShadow: `inset 0 0 0 1px ${colors.border}20`,
-          }}
+          className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+          style={{ backgroundColor: `${colors.border}15`, boxShadow: `inset 0 0 0 1px ${colors.border}20` }}
         >
-          <NodeTypeIcon
-            type={d.type ?? 'component'}
-            className="w-5 h-5"
-            style={{ color: colors.border }}
-          />
+          <NodeTypeIcon type={d.type ?? 'component'} className="w-4.5 h-4.5" style={{ color: colors.border }} />
         </div>
-        <span className="text-[15px] font-semibold text-slate-50 leading-snug">
-          {d.label}
-        </span>
-      </div>
-
-      {/* Description */}
-      <p className="relative text-[13px] text-slate-400 leading-relaxed line-clamp-2 mb-2">
-        {d.description}
-      </p>
-
-      {/* Trust level indicator bar */}
-      <div className="relative flex items-center gap-2 mt-3 pt-2.5 border-t border-white/5">
-        <div
-          className="w-2 h-2 rounded-full"
-          style={{ backgroundColor: colors.border }}
-        />
-        <span className="text-[11px] text-slate-500 uppercase tracking-wider font-medium">
-          {d.trustLevel}
-        </span>
+        <div className="flex-1 min-w-0">
+          <span className="text-[13px] font-semibold text-slate-50 leading-tight block">
+            {d.label}
+          </span>
+          <div className="flex items-center gap-1.5 mt-1">
+            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: colors.border }} />
+            <span className="text-[10px] text-slate-500 uppercase tracking-wider font-medium">
+              {d.trustLevel}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Vulnerability badge */}
       {vulnCount > 0 && (
         <span
-          className="absolute -top-2.5 -right-2.5 text-white text-[10px] font-bold
-            rounded-full w-5.5 h-5.5 flex items-center justify-center
-            border border-red-500/60"
+          className="absolute -top-2 -right-2 text-white text-[10px] font-bold
+            rounded-full flex items-center justify-center border border-red-500/60"
           style={{
             backgroundColor: 'rgba(220, 38, 38, 0.9)',
             boxShadow: '0 0 10px rgba(239, 68, 68, 0.4), 0 2px 4px rgba(0,0,0,0.3)',
-            width: 22,
-            height: 22,
+            width: 20, height: 20,
           }}
           aria-label={`${vulnCount} vulnerabilities`}
         >
@@ -147,13 +121,11 @@ function ComponentNodeInner({ data }: any) {
       {/* Defended shield */}
       {isDefended && (
         <span
-          className="absolute -top-2.5 -left-2.5 rounded-full flex items-center justify-center
-            border border-green-500/60"
+          className="absolute -top-2 -left-2 rounded-full flex items-center justify-center border border-green-500/60"
           style={{
             backgroundColor: 'rgba(22, 163, 74, 0.9)',
             boxShadow: '0 0 10px rgba(34, 197, 94, 0.4), 0 2px 4px rgba(0,0,0,0.3)',
-            width: 22,
-            height: 22,
+            width: 20, height: 20,
           }}
           aria-label="Defended"
         >

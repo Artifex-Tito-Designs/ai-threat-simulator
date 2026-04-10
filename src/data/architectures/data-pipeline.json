@@ -25,6 +25,7 @@
         "x": 240,
         "y": 653
       },
+      "tier": "client",
       "dataFlows": [
         "shipment records",
         "financial transactions",
@@ -50,6 +51,7 @@
         "x": 720,
         "y": 653
       },
+      "tier": "presentation",
       "dataFlows": [
         "raw ingested records",
         "CDC change events",
@@ -74,6 +76,7 @@
         "x": 1200,
         "y": 428
       },
+      "tier": "data",
       "dataFlows": [
         "raw data files",
         "partitioned datasets",
@@ -97,6 +100,7 @@
         "x": 1200,
         "y": 990
       },
+      "tier": "middleware",
       "dataFlows": [
         "cleaned datasets",
         "transformed tables",
@@ -120,6 +124,7 @@
         "x": 1680,
         "y": 765
       },
+      "tier": "application",
       "dataFlows": [
         "anomaly scores",
         "classification labels",
@@ -145,6 +150,7 @@
         "x": 2160,
         "y": 540
       },
+      "tier": "data",
       "dataFlows": [
         "analytical tables",
         "materialized views",
@@ -168,6 +174,7 @@
         "x": 2160,
         "y": 990
       },
+      "tier": "middleware",
       "dataFlows": [
         "metric definitions",
         "dimension hierarchies",
@@ -191,6 +198,7 @@
         "x": 2760,
         "y": 315
       },
+      "tier": "presentation",
       "dataFlows": [
         "dashboard views",
         "chart data",
@@ -214,6 +222,7 @@
         "x": 2760,
         "y": 765
       },
+      "tier": "client",
       "dataFlows": [
         "natural language questions",
         "generated SQL",
@@ -233,11 +242,12 @@
       "id": "report-generator",
       "type": "component",
       "label": "Automated Report Generator",
-      "description": "Scheduled reporting engine that produces and distributes automated business reports â€” weekly carrier scorecards, monthly financial summaries, daily operational snapshots, and ad-hoc executive briefings. Uses LLM-generated natural language narratives to summarize key trends, anomalies, and recommendations alongside charts and tables. Distributes via email, Slack, SharePoint, or embedded portal.",
+      "description": "Scheduled reporting engine that produces and distributes automated business reports \u2014 weekly carrier scorecards, monthly financial summaries, daily operational snapshots, and ad-hoc executive briefings. Uses LLM-generated natural language narratives to summarize key trends, anomalies, and recommendations alongside charts and tables. Distributes via email, Slack, SharePoint, or embedded portal.",
       "position": {
         "x": 2760,
         "y": 1215
       },
+      "tier": "presentation",
       "dataFlows": [
         "generated reports",
         "narrative summaries",
@@ -261,6 +271,7 @@
         "x": 1680,
         "y": 1440
       },
+      "tier": "operations",
       "dataFlows": [
         "access policies",
         "role assignments",
@@ -285,6 +296,7 @@
         "x": 1200,
         "y": 1440
       },
+      "tier": "operations",
       "dataFlows": [
         "quality check results",
         "freshness alerts",

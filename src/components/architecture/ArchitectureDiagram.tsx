@@ -4,7 +4,6 @@ import { useCallback, useMemo } from 'react';
 import {
   ReactFlow,
   Controls,
-  MiniMap,
   Background,
   BackgroundVariant,
   type Node,
@@ -17,17 +16,38 @@ import { ComponentNode } from './ComponentNode';
 import { TrustBoundaryNode } from './TrustBoundary';
 import { DataFlowEdge } from './DataFlowEdge';
 import { useScenarioStore } from '@/stores/scenarioStore';
+import { computeTierLayout, computeTierBands, TIER_CONFIG } from '@/lib/layout';
 import type { ArchitectureSchema } from '@/lib/types';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const nodeTypes: any = {
   componentNode: ComponentNode,
   trustBoundary: TrustBoundaryNode,
+  tierLabel: TierLabelNode,
 };
 
 const edgeTypes: any = {
   dataFlow: DataFlowEdge,
 };
+
+/** Simple label node for tier headers */
+function TierLabelNode({ data }: any) {
+  const d = data as { label: string; color: string };
+  return (
+    <div
+      className="flex items-center gap-2 px-3 py-1.5 rounded-lg select-none pointer-events-none"
+      style={{ backgroundColor: `${d.color}10`, border: `1px solid ${d.color}20` }}
+    >
+      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
+      <span
+        className="text-[11px] font-semibold uppercase tracking-widest"
+        style={{ color: d.color }}
+      >
+        {d.label}
+      </span>
+    </div>
+  );
+}
 
 interface ArchitectureDiagramProps {
   architecture: ArchitectureSchema;
@@ -38,11 +58,23 @@ export function ArchitectureDiagram({ architecture, onNodeClick }: ArchitectureD
   const { nodeStates, highlightedNodeIds, attackPathEdgeIds } = useScenarioStore();
   const hasHighlights = highlightedNodeIds.length > 0;
 
+  // Compute tier-based layout
+  const tierPositions = useMemo(
+    () => computeTierLayout(architecture.nodes),
+    [architecture.nodes]
+  );
+
+  const tierBands = useMemo(
+    () => computeTierBands(architecture.nodes, tierPositions),
+    [architecture.nodes, tierPositions]
+  );
+
   const nodes: Node[] = useMemo(() => {
-    return architecture.nodes.map((node) => ({
+    // Component nodes with computed positions
+    const componentNodes: Node[] = architecture.nodes.map((node) => ({
       id: node.id,
       type: 'componentNode',
-      position: node.position,
+      position: tierPositions[node.id] ?? node.position,
       data: {
         ...node,
         state: nodeStates[node.id] ?? 'normal',
@@ -51,7 +83,19 @@ export function ArchitectureDiagram({ architecture, onNodeClick }: ArchitectureD
         onClick: () => onNodeClick?.(node.id),
       },
     }));
-  }, [architecture.nodes, nodeStates, highlightedNodeIds, hasHighlights, onNodeClick]);
+
+    // Tier label nodes (placed to the left of each tier row)
+    const labelNodes: Node[] = tierBands.map((band) => ({
+      id: `tier-label-${band.tier.id}`,
+      type: 'tierLabel',
+      position: { x: 10, y: band.y + 15 },
+      data: { label: band.tier.label, color: band.tier.color },
+      selectable: false,
+      draggable: false,
+    }));
+
+    return [...labelNodes, ...componentNodes];
+  }, [architecture.nodes, tierPositions, tierBands, nodeStates, highlightedNodeIds, hasHighlights, onNodeClick]);
 
   const edges: Edge[] = useMemo(
     () =>
@@ -86,8 +130,9 @@ export function ArchitectureDiagram({ architecture, onNodeClick }: ArchitectureD
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         onInit={onInit}
-        defaultViewport={{ x: 50, y: 20, zoom: 0.6 }}
-        minZoom={0.2}
+        fitView
+        fitViewOptions={{ padding: 0.15 }}
+        minZoom={0.3}
         maxZoom={3}
         panOnDrag
         zoomOnScroll

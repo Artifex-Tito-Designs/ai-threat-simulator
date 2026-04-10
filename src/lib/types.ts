@@ -15,6 +15,7 @@ export type SolutionCategory =
   | 'descriptive';
 
 export type NodeType = 'component' | 'datastore' | 'external' | 'user' | 'model';
+export type ArchitectureTier = 'client' | 'presentation' | 'application' | 'middleware' | 'data' | 'operations';
 export type TrustLevel = 'trusted' | 'semi-trusted' | 'untrusted';
 export type BoundaryType = 'network' | 'auth' | 'privilege' | 'data-classification';
 
@@ -24,6 +25,7 @@ export interface ArchitectureNode {
   label: string;
   description: string;
   position: { x: number; y: number };
+  tier: ArchitectureTier;
   dataFlows: string[];
   trustLevel: TrustLevel;
   vulnerabilities: string[];

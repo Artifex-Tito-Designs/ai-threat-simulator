@@ -27,11 +27,12 @@
       "id": "document-intake",
       "type": "external",
       "label": "Document Intake",
-      "description": "Entry point for all inbound documents. Receives files via email gateway (SMTP/IMAP), REST API upload, SFTP drop folder, scanner feed, and EDI interchange. Handles PDFs, TIFF scans, JPEG photos, MSG/EML email files, and XML/EDI messages. This is the primary attack surface â€” every document is untrusted content from external parties including carriers, customs brokers, shippers, and vendors.",
+      "description": "Entry point for all inbound documents. Receives files via email gateway (SMTP/IMAP), REST API upload, SFTP drop folder, scanner feed, and EDI interchange. Handles PDFs, TIFF scans, JPEG photos, MSG/EML email files, and XML/EDI messages. This is the primary attack surface \u2014 every document is untrusted content from external parties including carriers, customs brokers, shippers, and vendors.",
       "position": {
         "x": 1080,
         "y": 203
       },
+      "tier": "client",
       "dataFlows": [
         "raw documents",
         "email attachments",
@@ -57,6 +58,7 @@
         "x": 1080,
         "y": 483
       },
+      "tier": "presentation",
       "dataFlows": [
         "extracted text",
         "normalized images",
@@ -80,6 +82,7 @@
         "x": 600,
         "y": 765
       },
+      "tier": "application",
       "dataFlows": [
         "document type labels",
         "classification confidence scores",
@@ -101,6 +104,7 @@
         "x": 600,
         "y": 483
       },
+      "tier": "application",
       "dataFlows": [
         "classification predictions",
         "confidence scores",
@@ -123,6 +127,7 @@
         "x": 1320,
         "y": 933
       },
+      "tier": "application",
       "dataFlows": [
         "extracted field values",
         "field confidence scores",
@@ -146,6 +151,7 @@
         "x": 1800,
         "y": 765
       },
+      "tier": "application",
       "dataFlows": [
         "structured field extractions",
         "confidence scores",
@@ -168,6 +174,7 @@
         "x": 1320,
         "y": 1215
       },
+      "tier": "application",
       "dataFlows": [
         "validation results",
         "anomaly flags",
@@ -191,6 +198,7 @@
         "x": 2040,
         "y": 1215
       },
+      "tier": "data",
       "dataFlows": [
         "customer records",
         "HS code lookups",
@@ -215,6 +223,7 @@
         "x": 600,
         "y": 1328
       },
+      "tier": "presentation",
       "dataFlows": [
         "review assignments",
         "corrected extractions",
@@ -238,6 +247,7 @@
         "x": 1320,
         "y": 1553
       },
+      "tier": "presentation",
       "dataFlows": [
         "formatted output payloads",
         "routing decisions",
@@ -261,6 +271,7 @@
         "x": 2040,
         "y": 1665
       },
+      "tier": "middleware",
       "dataFlows": [
         "shipment records",
         "customs filings",
@@ -285,6 +296,7 @@
         "x": 360,
         "y": 1665
       },
+      "tier": "operations",
       "dataFlows": [
         "processing events",
         "classification logs",

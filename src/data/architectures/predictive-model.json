@@ -38,6 +38,7 @@
         "x": 240,
         "y": 428
       },
+      "tier": "client",
       "dataFlows": [
         "shipment records",
         "market rate feeds",
@@ -63,6 +64,7 @@
         "x": 720,
         "y": 428
       },
+      "tier": "presentation",
       "dataFlows": [
         "validated records",
         "transformed features",
@@ -86,6 +88,7 @@
         "x": 720,
         "y": 878
       },
+      "tier": "data",
       "dataFlows": [
         "training datasets",
         "historical records",
@@ -110,6 +113,7 @@
         "x": 1200,
         "y": 428
       },
+      "tier": "data",
       "dataFlows": [
         "computed features",
         "feature vectors",
@@ -133,6 +137,7 @@
         "x": 1320,
         "y": 878
       },
+      "tier": "application",
       "dataFlows": [
         "trained model artifacts",
         "evaluation metrics",
@@ -156,6 +161,7 @@
         "x": 1800,
         "y": 1103
       },
+      "tier": "operations",
       "dataFlows": [
         "experiment metadata",
         "run comparisons",
@@ -179,6 +185,7 @@
         "x": 1800,
         "y": 653
       },
+      "tier": "data",
       "dataFlows": [
         "versioned models",
         "serving configs",
@@ -203,6 +210,7 @@
         "x": 2280,
         "y": 653
       },
+      "tier": "application",
       "dataFlows": [
         "raw predictions",
         "confidence scores",
@@ -226,6 +234,7 @@
         "x": 2280,
         "y": 315
       },
+      "tier": "presentation",
       "dataFlows": [
         "formatted predictions",
         "prediction explanations",
@@ -249,6 +258,7 @@
         "x": 2880,
         "y": 315
       },
+      "tier": "presentation",
       "dataFlows": [
         "displayed predictions",
         "automated decisions",
@@ -272,6 +282,7 @@
         "x": 2280,
         "y": 1103
       },
+      "tier": "operations",
       "dataFlows": [
         "drift alerts",
         "performance dashboards",
@@ -295,6 +306,7 @@
         "x": 2880,
         "y": 878
       },
+      "tier": "operations",
       "dataFlows": [
         "actual outcomes",
         "prediction-vs-actual pairs",

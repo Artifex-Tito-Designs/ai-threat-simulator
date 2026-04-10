@@ -29,11 +29,12 @@
       "id": "user-trigger",
       "type": "user",
       "label": "User / Trigger Interface",
-      "description": "Entry point for agent tasks â€” can be a human request via chat or dashboard, an automated API call, a scheduled cron trigger, or an event-driven webhook. All task inputs enter the system here, including natural language instructions, structured payloads, and follow-up corrections. This is the primary injection surface for adversarial task descriptions.",
+      "description": "Entry point for agent tasks \u2014 can be a human request via chat or dashboard, an automated API call, a scheduled cron trigger, or an event-driven webhook. All task inputs enter the system here, including natural language instructions, structured payloads, and follow-up corrections. This is the primary injection surface for adversarial task descriptions.",
       "position": {
         "x": 240,
         "y": 765
       },
+      "tier": "client",
       "dataFlows": [
         "task requests",
         "natural language instructions",
@@ -57,6 +58,7 @@
         "x": 960,
         "y": 765
       },
+      "tier": "application",
       "dataFlows": [
         "task decomposition requests",
         "tool call dispatches",
@@ -81,6 +83,7 @@
         "x": 960,
         "y": 315
       },
+      "tier": "application",
       "dataFlows": [
         "execution plans",
         "subtask sequences",
@@ -104,6 +107,7 @@
         "x": 1560,
         "y": 315
       },
+      "tier": "middleware",
       "dataFlows": [
         "conversation history",
         "task state snapshots",
@@ -123,11 +127,12 @@
       "id": "tool-registry",
       "type": "component",
       "label": "Tool Registry",
-      "description": "Catalog of all tools, APIs, and functions available to the agent, including their schemas, required parameters, permission levels, and rate limits. The LLM references this registry to select appropriate tools for each subtask. Controls the agent's capability surface â€” any tool registered here can potentially be invoked by the agent.",
+      "description": "Catalog of all tools, APIs, and functions available to the agent, including their schemas, required parameters, permission levels, and rate limits. The LLM references this registry to select appropriate tools for each subtask. Controls the agent's capability surface \u2014 any tool registered here can potentially be invoked by the agent.",
       "position": {
         "x": 1560,
         "y": 765
       },
+      "tier": "middleware",
       "dataFlows": [
         "tool schemas",
         "parameter definitions",
@@ -151,6 +156,7 @@
         "x": 2160,
         "y": 765
       },
+      "tier": "application",
       "dataFlows": [
         "API requests",
         "authenticated calls",
@@ -162,7 +168,7 @@
       "vulnerabilities": [
         "Credential exposure if API keys and service account tokens are accessible to the LLM through tool execution logs or error messages",
         "Parameter injection where LLM-generated tool arguments contain malicious payloads passed directly to external APIs (SQL injection, command injection)",
-        "Irreversible action execution without pre-validation â€” booking confirmations, payment authorizations, or shipment cancellations executed before human review",
+        "Irreversible action execution without pre-validation \u2014 booking confirmations, payment authorizations, or shipment cancellations executed before human review",
         "Rate limit exhaustion through rapid sequential tool calls draining API quotas and incurring overage charges"
       ]
     },
@@ -175,6 +181,7 @@
         "x": 2880,
         "y": 765
       },
+      "tier": "middleware",
       "dataFlows": [
         "booking confirmations",
         "rate quotes",
@@ -200,6 +207,7 @@
         "x": 960,
         "y": 1215
       },
+      "tier": "application",
       "dataFlows": [
         "reasoning traces",
         "tool call decisions",
@@ -221,11 +229,12 @@
       "id": "system-prompt",
       "type": "component",
       "label": "System Prompt / Agent Instructions",
-      "description": "Defines the agent's role, behavioral constraints, permitted actions, prohibited operations, output format requirements, escalation rules, and safety guardrails. Contains domain-specific instructions (e.g., always verify customs codes, never auto-approve payments above threshold). This is the primary control mechanism for agent behavior â€” its integrity determines the agent's operational envelope.",
+      "description": "Defines the agent's role, behavioral constraints, permitted actions, prohibited operations, output format requirements, escalation rules, and safety guardrails. Contains domain-specific instructions (e.g., always verify customs codes, never auto-approve payments above threshold). This is the primary control mechanism for agent behavior \u2014 its integrity determines the agent's operational envelope.",
       "position": {
         "x": 360,
         "y": 1215
       },
+      "tier": "middleware",
       "dataFlows": [
         "role instructions",
         "behavioral constraints",
@@ -250,6 +259,7 @@
         "x": 1560,
         "y": 1215
       },
+      "tier": "presentation",
       "dataFlows": [
         "validated actions",
         "blocked actions",
@@ -274,6 +284,7 @@
         "x": 2160,
         "y": 1215
       },
+      "tier": "presentation",
       "dataFlows": [
         "approval requests",
         "action context summaries",
@@ -297,6 +308,7 @@
         "x": 1560,
         "y": 1665
       },
+      "tier": "operations",
       "dataFlows": [
         "decision logs",
         "tool call records",
@@ -322,6 +334,7 @@
         "x": 2880,
         "y": 1215
       },
+      "tier": "operations",
       "dataFlows": [
         "error classifications",
         "retry signals",

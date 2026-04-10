@@ -41,6 +41,7 @@
         "x": 240,
         "y": 653
       },
+      "tier": "client",
       "dataFlows": [
         "user queries",
         "natural language questions",
@@ -63,6 +64,7 @@
         "x": 840,
         "y": 653
       },
+      "tier": "presentation",
       "dataFlows": [
         "sanitized queries",
         "blocked request notifications",
@@ -85,6 +87,7 @@
         "x": 1440,
         "y": 540
       },
+      "tier": "application",
       "dataFlows": [
         "reformulated queries",
         "intent labels",
@@ -107,6 +110,7 @@
         "x": 2040,
         "y": 540
       },
+      "tier": "middleware",
       "dataFlows": [
         "query vectors",
         "document embeddings",
@@ -129,6 +133,7 @@
         "x": 2640,
         "y": 315
       },
+      "tier": "data",
       "dataFlows": [
         "stored embeddings",
         "similarity search results",
@@ -152,6 +157,7 @@
         "x": 2640,
         "y": 878
       },
+      "tier": "data",
       "dataFlows": [
         "raw documents",
         "document chunks",
@@ -178,6 +184,7 @@
         "x": 2040,
         "y": 990
       },
+      "tier": "middleware",
       "dataFlows": [
         "ranked document chunks",
         "assembled context",
@@ -201,6 +208,7 @@
         "x": 1440,
         "y": 1103
       },
+      "tier": "application",
       "dataFlows": [
         "generated responses",
         "reasoning traces",
@@ -220,11 +228,12 @@
       "id": "system-prompt",
       "type": "component",
       "label": "System Prompt",
-      "description": "Defines the LLM's role, behavioral constraints, output format requirements, topic boundaries, and safety guardrails. Contains instructions like domain restrictions, response length limits, citation requirements, and prohibited actions. This is a critical security component â€” its integrity determines the chatbot's behavioral envelope.",
+      "description": "Defines the LLM's role, behavioral constraints, output format requirements, topic boundaries, and safety guardrails. Contains instructions like domain restrictions, response length limits, citation requirements, and prohibited actions. This is a critical security component \u2014 its integrity determines the chatbot's behavioral envelope.",
       "position": {
         "x": 840,
         "y": 1215
       },
+      "tier": "middleware",
       "dataFlows": [
         "role instructions",
         "output constraints",
@@ -248,6 +257,7 @@
         "x": 840,
         "y": 1665
       },
+      "tier": "presentation",
       "dataFlows": [
         "validated responses",
         "filtered content",
@@ -271,6 +281,7 @@
         "x": 240,
         "y": 1665
       },
+      "tier": "presentation",
       "dataFlows": [
         "formatted responses",
         "source citations",
@@ -293,6 +304,7 @@
         "x": 2040,
         "y": 1665
       },
+      "tier": "operations",
       "dataFlows": [
         "conversation logs",
         "usage metrics",
@@ -317,6 +329,7 @@
         "x": 2640,
         "y": 1665
       },
+      "tier": "operations",
       "dataFlows": [
         "configuration changes",
         "document uploads",

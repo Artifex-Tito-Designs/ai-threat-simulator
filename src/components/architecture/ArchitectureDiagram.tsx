@@ -87,32 +87,19 @@ export function ArchitectureDiagram({ architecture, onNodeClick }: ArchitectureD
         edgeTypes={edgeTypes}
         onInit={onInit}
         fitView
-        fitViewOptions={{ padding: 0.12 }}
-        minZoom={0.3}
-        maxZoom={2}
+        fitViewOptions={{ padding: 0.15 }}
+        minZoom={0.4}
+        maxZoom={2.5}
+        defaultViewport={{ x: 0, y: 0, zoom: 0.85 }}
         proOptions={{ hideAttribution: false }}
         className="bg-[#0F172A]"
       >
-        <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#1E293B" />
+        <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="#1E293B" />
         <Controls
           showInteractive={false}
-          className="!bg-[#1E293B] !border-slate-700 !rounded-lg"
-        />
-        <MiniMap
-          pannable
-          zoomable
-          nodeColor={(node) => {
-            const state = nodeStates[node.id];
-            if (state === 'compromised') return '#EF4444';
-            if (state === 'targeted') return '#F59E0B';
-            if (state === 'defended') return '#22C55E';
-            return '#64748B';
-          }}
-          nodeStrokeWidth={2}
-          position="bottom-left"
-          style={{ width: 200, height: 130 }}
-          className="!bg-[#1E293B]/90 !border-slate-600 !rounded-lg"
-          maskColor="rgba(15, 23, 42, 0.5)"
+          position="bottom-right"
+          className="!bg-[#1E293B]/90 !border-slate-700/50 !rounded-lg !shadow-lg !shadow-black/30"
+          style={{ marginBottom: 12, marginRight: 12 }}
         />
       </ReactFlow>
     </div>

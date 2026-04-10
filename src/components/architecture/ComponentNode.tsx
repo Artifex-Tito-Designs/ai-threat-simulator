@@ -41,7 +41,7 @@ function ComponentNodeInner({ data }: any) {
 
   return (
     <div
-      className={`component-node relative rounded-xl border-2 px-4 py-3 min-w-[190px] max-w-[230px] cursor-pointer
+      className={`component-node relative rounded-xl border-2 px-5 py-4 min-w-[240px] max-w-[280px] cursor-pointer
         shadow-lg shadow-black/40
         transition-all duration-200 hover:scale-[1.04] hover:shadow-xl hover:shadow-black/50
         focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 focus-visible:ring-offset-[#0F172A]
@@ -91,9 +91,9 @@ function ComponentNodeInner({ data }: any) {
       />
 
       {/* Node type icon + label */}
-      <div className="relative flex items-center gap-2.5 mb-2">
+      <div className="relative flex items-center gap-3 mb-2.5">
         <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+          className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
           style={{
             backgroundColor: `${colors.border}15`,
             boxShadow: `inset 0 0 0 1px ${colors.border}20`,
@@ -101,27 +101,27 @@ function ComponentNodeInner({ data }: any) {
         >
           <NodeTypeIcon
             type={d.type ?? 'component'}
-            className="w-4 h-4"
+            className="w-5 h-5"
             style={{ color: colors.border }}
           />
         </div>
-        <span className="text-[13px] font-semibold text-slate-50 leading-tight tracking-tight">
+        <span className="text-sm font-semibold text-slate-50 leading-tight tracking-tight">
           {d.label}
         </span>
       </div>
 
       {/* Description */}
-      <p className="relative text-[11px] text-slate-400 leading-snug line-clamp-2 mb-1">
+      <p className="relative text-xs text-slate-400 leading-relaxed line-clamp-2 mb-1.5">
         {d.description}
       </p>
 
       {/* Trust level indicator bar */}
-      <div className="relative flex items-center gap-1.5 mt-2 pt-2 border-t border-white/5">
+      <div className="relative flex items-center gap-1.5 mt-2.5 pt-2 border-t border-white/5">
         <div
-          className="w-1.5 h-1.5 rounded-full"
+          className="w-2 h-2 rounded-full"
           style={{ backgroundColor: colors.border }}
         />
-        <span className="text-[9px] text-slate-500 uppercase tracking-wider font-medium">
+        <span className="text-[10px] text-slate-500 uppercase tracking-wider font-medium">
           {d.trustLevel}
         </span>
       </div>

@@ -99,24 +99,32 @@ export function ArchitectureDiagram({ architecture, onNodeClick }: ArchitectureD
 
   const edges: Edge[] = useMemo(
     () =>
-      architecture.edges.map((edge) => ({
-        id: edge.id,
-        source: edge.source,
-        target: edge.target,
-        type: 'dataFlow',
-        data: {
-          label: edge.label,
-          encrypted: edge.encrypted,
-          validated: edge.validated,
-          isAttackPath: attackPathEdgeIds.includes(edge.id),
-        },
-        markerEnd: {
-          type: MarkerType.ArrowClosed,
-          color: attackPathEdgeIds.includes(edge.id) ? '#EF4444' : '#475569',
-          width: 16,
-          height: 16,
-        },
-      })),
+      architecture.edges.map((edge) => {
+        const isAttack = attackPathEdgeIds.includes(edge.id);
+        const markerColor = isAttack ? '#EF4444'
+          : (edge.encrypted && edge.validated) ? '#22C55E'
+          : edge.encrypted ? '#3B82F6'
+          : edge.validated ? '#F59E0B'
+          : '#475569';
+        return {
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+          type: 'dataFlow',
+          data: {
+            label: edge.label,
+            encrypted: edge.encrypted,
+            validated: edge.validated,
+            isAttackPath: isAttack,
+          },
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            color: markerColor,
+            width: 16,
+            height: 16,
+          },
+        };
+      }),
     [architecture.edges, attackPathEdgeIds]
   );
 

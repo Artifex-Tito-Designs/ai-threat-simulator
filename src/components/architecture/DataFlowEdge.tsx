@@ -7,7 +7,7 @@ import {
   getSmoothStepPath,
   type EdgeProps,
 } from '@xyflow/react';
-import { Lock, Unlock, AlertTriangle, Check } from '@/components/ui/Icons';
+// Icons no longer shown inline — security posture indicated by edge color
 
 function DataFlowEdgeInner({
   id,
@@ -37,7 +37,16 @@ function DataFlowEdgeInner({
   });
 
   const isAttack = d?.isAttackPath ?? false;
+  const isEncrypted = d?.encrypted === true;
+  const isValidated = d?.validated === true;
   const showLabel = hovered || clicked || isAttack;
+
+  // Color-code by security posture
+  const edgeColor = isAttack ? '#EF4444'
+    : (isEncrypted && isValidated) ? '#22C55E'
+    : isEncrypted ? '#3B82F6'
+    : isValidated ? '#F59E0B'
+    : '#334155';
 
   return (
     <>
@@ -67,13 +76,27 @@ function DataFlowEdgeInner({
         interactionWidth={20}
       />
 
+      {/* Subtle glow for secure connections */}
+      {!isAttack && (isEncrypted || isValidated) && hovered && (
+        <BaseEdge
+          id={`${id}-secglow`}
+          path={edgePath}
+          style={{
+            stroke: edgeColor,
+            strokeWidth: 5,
+            strokeOpacity: 0.1,
+            filter: 'blur(3px)',
+          }}
+        />
+      )}
+
       {/* Main visible edge */}
       <BaseEdge
         id={id}
         path={edgePath}
         markerEnd={markerEnd}
         style={{
-          stroke: isAttack ? '#EF4444' : hovered ? '#64748B' : '#334155',
+          stroke: hovered ? edgeColor : isAttack ? '#EF4444' : `${edgeColor}90`,
           strokeWidth: isAttack ? 2.5 : hovered ? 2 : 1.5,
           strokeDasharray: isAttack ? '8 4' : undefined,
           transition: 'stroke 150ms, stroke-width 150ms',
@@ -120,10 +143,16 @@ function DataFlowEdgeInner({
                 zIndex: 50,
               }}
             >
-              {d.encrypted === true && <Lock className="w-3 h-3 text-green-400 shrink-0" />}
-              {d.encrypted === false && <Unlock className="w-3 h-3 text-slate-500 shrink-0" />}
-              {d.validated === false && <AlertTriangle className="w-3 h-3 text-amber-400 shrink-0" />}
-              {d.validated === true && <Check className="w-3 h-3 text-green-400 shrink-0" />}
+              <div
+                className="w-2 h-2 rounded-full shrink-0"
+                style={{ backgroundColor: edgeColor }}
+                title={
+                  isEncrypted && isValidated ? 'Encrypted + Validated'
+                  : isEncrypted ? 'Encrypted'
+                  : isValidated ? 'Validated'
+                  : 'Unsecured'
+                }
+              />
               <span className="font-medium">{d.label}</span>
             </div>
           )}

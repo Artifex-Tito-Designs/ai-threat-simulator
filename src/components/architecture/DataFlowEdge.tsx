@@ -68,8 +68,8 @@ function DataFlowEdgeInner({
       {d?.label && (
         <EdgeLabelRenderer>
           <div
-            className="absolute text-[10px] text-slate-400 px-2 py-0.5 rounded-md
-              pointer-events-none flex items-center gap-1"
+            className="absolute text-[11px] text-slate-400 px-2.5 py-1 rounded-md
+              pointer-events-none flex items-center gap-1.5"
             style={{
               transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
               backgroundColor: 'rgba(15, 23, 42, 0.92)',

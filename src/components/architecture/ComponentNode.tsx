@@ -41,7 +41,7 @@ function ComponentNodeInner({ data }: any) {
 
   return (
     <div
-      className={`component-node relative rounded-xl border-2 px-5 py-4 min-w-[240px] max-w-[280px] cursor-pointer
+      className={`component-node relative rounded-xl border-2 px-6 py-5 min-w-[280px] max-w-[320px] cursor-pointer
         shadow-lg shadow-black/40
         transition-all duration-200 hover:scale-[1.04] hover:shadow-xl hover:shadow-black/50
         focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 focus-visible:ring-offset-[#0F172A]
@@ -91,9 +91,9 @@ function ComponentNodeInner({ data }: any) {
       />
 
       {/* Node type icon + label */}
-      <div className="relative flex items-center gap-3 mb-2.5">
+      <div className="relative flex items-center gap-3 mb-3">
         <div
-          className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+          className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
           style={{
             backgroundColor: `${colors.border}15`,
             boxShadow: `inset 0 0 0 1px ${colors.border}20`,
@@ -105,23 +105,23 @@ function ComponentNodeInner({ data }: any) {
             style={{ color: colors.border }}
           />
         </div>
-        <span className="text-sm font-semibold text-slate-50 leading-tight tracking-tight">
+        <span className="text-[15px] font-semibold text-slate-50 leading-snug">
           {d.label}
         </span>
       </div>
 
       {/* Description */}
-      <p className="relative text-xs text-slate-400 leading-relaxed line-clamp-2 mb-1.5">
+      <p className="relative text-[13px] text-slate-400 leading-relaxed line-clamp-2 mb-2">
         {d.description}
       </p>
 
       {/* Trust level indicator bar */}
-      <div className="relative flex items-center gap-1.5 mt-2.5 pt-2 border-t border-white/5">
+      <div className="relative flex items-center gap-2 mt-3 pt-2.5 border-t border-white/5">
         <div
           className="w-2 h-2 rounded-full"
           style={{ backgroundColor: colors.border }}
         />
-        <span className="text-[10px] text-slate-500 uppercase tracking-wider font-medium">
+        <span className="text-[11px] text-slate-500 uppercase tracking-wider font-medium">
           {d.trustLevel}
         </span>
       </div>

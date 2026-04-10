@@ -87,11 +87,15 @@ export function ArchitectureDiagram({ architecture, onNodeClick }: ArchitectureD
         edgeTypes={edgeTypes}
         onInit={onInit}
         fitView
-        fitViewOptions={{ padding: 0.15 }}
-        minZoom={0.4}
-        maxZoom={2.5}
-        defaultViewport={{ x: 0, y: 0, zoom: 0.85 }}
-        proOptions={{ hideAttribution: false }}
+        fitViewOptions={{ padding: 0.2 }}
+        minZoom={0.3}
+        maxZoom={3}
+        panOnDrag
+        zoomOnScroll
+        zoomOnPinch
+        panOnScroll={false}
+        selectionOnDrag={false}
+        proOptions={{ hideAttribution: true }}
         className="bg-[#0F172A]"
       >
         <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="#1E293B" />

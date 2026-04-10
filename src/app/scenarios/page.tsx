@@ -192,7 +192,7 @@ export default function ScenariosPage() {
                 {/* Trust level legend */}
                 <div className="bg-[#0B1120]/90 backdrop-blur-sm border border-slate-700/40
                   rounded-lg px-3 py-2 flex items-center gap-4 text-[10px] text-slate-400">
-                  <span className="text-slate-500 font-semibold uppercase tracking-wider">Trust</span>
+                  <span className="text-slate-500 font-semibold uppercase tracking-wider">Nodes</span>
                   <div className="flex items-center gap-1.5">
                     <div className="w-2.5 h-2.5 rounded-full border-2 border-green-500 bg-green-500/20" />
                     <span>Trusted</span>

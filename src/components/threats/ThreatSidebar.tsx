@@ -56,20 +56,26 @@ export function ThreatSidebar({ isCollapsed, onToggle }: ThreatSidebarProps) {
 
   if (isCollapsed) {
     return (
-      <div className="w-11 border-l border-slate-700/50 bg-[#0B1120] flex flex-col items-center pt-3">
-        <button
-          onClick={onToggle}
-          className="text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-700/50 transition-colors
-            focus-visible:ring-2 focus-visible:ring-blue-500"
-          aria-label="Expand threat sidebar"
-          title="Show threats"
-        >
-          <ChevronLeft className="w-4 h-4" />
-        </button>
-        <div className="mt-4 -rotate-90 whitespace-nowrap text-[10px] text-slate-500 uppercase tracking-widest font-medium">
-          OWASP LLM Top 10
+      <button
+        onClick={onToggle}
+        className="w-11 border-l border-slate-700/50 bg-[#0B1120] flex flex-col items-center
+          hover:bg-slate-800/60 transition-colors cursor-pointer
+          focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset"
+        aria-label="Expand threat sidebar"
+        title="Show threats"
+      >
+        <div className="pt-4 pb-3">
+          <ChevronLeft className="w-4 h-4 text-slate-400" />
         </div>
-      </div>
+        <div className="flex-1 flex items-center justify-center">
+          <span
+            className="text-[10px] text-slate-500 uppercase tracking-widest font-medium"
+            style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+          >
+            OWASP LLM Top 10
+          </span>
+        </div>
+      </button>
     );
   }
 
